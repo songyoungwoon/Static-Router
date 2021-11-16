@@ -36,6 +36,14 @@ public class IPLayer implements BaseLayer {
     	String Gateway = null;
     	String Flag = null;
     	String Interface = null;
+
+		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
+            this.Dst_ip_addr = Dst_ip_addr;
+            this.Subnet_mask = Subnet_mask;
+            this.Gateway = Gateway;
+            this.Flag = Flag;
+            this.Interface = Interface;
+        }
     }
     
 	// ----- Structures -----
