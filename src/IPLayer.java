@@ -104,8 +104,6 @@ public class IPLayer implements BaseLayer {
 		
 	}
 	
-	// testestestestestest
-	// testestestestestest
 	// ----- Rout function -----
 	public boolean receive(byte[] input) {
 		/*
