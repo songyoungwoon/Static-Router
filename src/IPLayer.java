@@ -36,6 +36,14 @@ public class IPLayer implements BaseLayer {
     	String Gateway = null;
     	String Flag = null;
     	String Interface = null;
+
+		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
+            this.Dst_ip_addr = Dst_ip_addr;
+            this.Subnet_mask = Subnet_mask;
+            this.Gateway = Gateway;
+            this.Flag = Flag;
+            this.Interface = Interface;
+        }
     }
     
 	// ----- Structures -----
@@ -78,6 +86,14 @@ public class IPLayer implements BaseLayer {
 			ip_data = null;
 		}
 	}
+
+	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
+        return RoutingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface));
+    }
+
+	public void deleteRoutingTableEntry(int index) {
+        RoutingTable.remove(index);
+    }
 	
 	public boolean sendARP(byte[] dstAddr) {
 		logging.log("Send ARP");
