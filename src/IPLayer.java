@@ -90,6 +90,10 @@ public class IPLayer implements BaseLayer {
 	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
         return RoutingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface));
     }
+
+	public void deleteRoutingTableEntry(int index) {
+        RoutingTable.remove(index);
+    }
 	
 	public boolean sendARP(byte[] dstAddr) {
 		logging.log("Send ARP");
