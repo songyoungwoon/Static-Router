@@ -112,13 +112,6 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 	
-	// ----- setRoutingTable -----
-	public void setRoutingTable() {
-	// get routing table info from GUI
-	// setting RoutingTable
-	// RoutingTable is ArrayList<_Routing_Structures>
-		
-	}
 	
 	// ----- Rout function -----
 	public boolean receive(byte[] input) {
@@ -170,6 +163,7 @@ public class IPLayer implements BaseLayer {
 		
 		// 5.
 		((EthernetLayer) this.getUnderLayer()).RouterSend(portNum, directTransferMac, input);
+		
 		
 		
 		/////////////////////// delete maybe //////////////////////////

@@ -55,6 +55,8 @@ public class EthernetLayer implements BaseLayer {
 	// ----- Methods -----
 	
 	// ----- RouterSend -----
+	// ----- TODO : send Routing data -----
+	// check portNum, attach header (DST, SRC MacAddr)
 	public boolean RouterSend(String portNum, byte[] directTransferMac, byte[] input) {
 		
 		return true;
@@ -69,6 +71,7 @@ public class EthernetLayer implements BaseLayer {
 		return this.getUnderLayer().send(bytes, length + HEADER_SIZE);
 	}
 
+	// ----- delete maybe -----
 	public boolean sendData(byte[] input, int length) {
 		byte[] srcIP = ((IPLayer) this.getUpperLayer(1)).getIPSrcAddress();
 		byte[] dstIP = ((IPLayer) this.getUpperLayer(1)).getIPDstAddress();
@@ -87,7 +90,10 @@ public class EthernetLayer implements BaseLayer {
 		input = cpyInput;
 		return input;
 	}
-
+	
+	// ----- TODO : check ARP OR ROUT -----
+	// check ethernet type in ethernet header
+	// 0x0800 : rout, 0x0806 : arp
 	public synchronized boolean receive(byte[] input) {
 		_ETHERNET_Frame received = this.byteToObj(input, input.length);
 		int frameType = byte2ToInt(received.enet_type[0], received.enet_type[1]);

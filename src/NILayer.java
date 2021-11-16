@@ -63,6 +63,9 @@ public class NILayer implements BaseLayer {
 		receive();
 	}
 
+	// ----- TODO : NIC check ----- 
+	// m_iNumAdapter ?
+	// send after setAdapterNumber 
 	public boolean send(byte[] input, int length) {
 		ByteBuffer buf = ByteBuffer.wrap(input);
 		logging.log("Send");
