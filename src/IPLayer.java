@@ -135,8 +135,8 @@ public class IPLayer implements BaseLayer {
 		 */
 		
 		// 0.
-		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
-		String portNum = null;
+		byte[] srcIpAddr = Arrays.copyOfRange(input, 26, 30);
+		byte[] dstIpAddr = null;
 		byte[] directTransferIp = null;
 		byte[] directTransferMac = null;
 		
@@ -156,7 +156,7 @@ public class IPLayer implements BaseLayer {
 
 		// 2.
 		_Routing_Structures matchedRout = RoutingTable.get(routingTableIndex);
-		portNum = matchedRout.Interface;
+		String portNum = matchedRout.Interface;
 		if(matchedRout.Flag.equals("U")) {
 			directTransferIp = dstIpAddr;
 		}
@@ -168,13 +168,11 @@ public class IPLayer implements BaseLayer {
 		}
 		
 		// 3. 4.
-		byte[] my_ip = null; // ** not complete **
-		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).checkARPCache(my_ip, directTransferIp, portNum);
+		//byte[] my_ip = null; // ** not complete **
+		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).checkARPCache(srcIpAddr, directTransferIp, portNum);
 		
-		// 5.
-		((EthernetLayer)this.getUnderLayer()).sendData(input, input.length, portNum, directTransferMac);
-		// recive and send complete.
-		return true;
+		// 5. send complete.
+		return ((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, portNum, directTransferMac);
 	}
 	
 	// ----- bit And operation -----
