@@ -57,9 +57,12 @@ public class EthernetLayer implements BaseLayer {
 	// ----- RouterSend -----
 	// ----- TODO : send Routing data -----
 	// check portNum, attach header (DST, SRC MacAddr)
-	public boolean RouterSend(String portNum, byte[] directTransferMac, byte[] input) {
-		
-		return true;
+	public boolean RouterSend(byte[] input, int length, String portNum, byte[] directTransferMac) {
+		setEnetDstAddress(directTransferMac);
+		m_sHeader.enet_type = intToByte2(DATA_TYPE);
+		logging.log("Send data");
+		byte[] bytes = objToByte(m_sHeader, input, length, false);
+		return this.getUnderLayer().RouterSend(bytes, length + HEADER_SIZE, portNum);
 	}
 	
 	// Sending
