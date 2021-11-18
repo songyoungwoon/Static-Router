@@ -115,6 +115,16 @@ public class IPLayer implements BaseLayer {
 	
 	// ----- Rout function -----
 	public boolean receive(byte[] input) {
+
+		_IP received = byteToObj(input, input.length);
+		if(srcIsMe(received.ip_src)) {
+			logging.log("Packet rejected: Sent by this host");
+			return false;
+		} else if(!dstIsMe(received.ip_dst)) {
+			logging.log("Packet rejected: Not sent to this host");
+			return false;
+		}
+
 		/*
 		 0. input 패킷 뜯어서 목적지 ip 체크 -> ping packet 구조 알아야됨
 		 1. routing table 확인
@@ -132,20 +142,20 @@ public class IPLayer implements BaseLayer {
 		
 		// 1.
 		byte[] tempAddr;
-		int rout_index = 0;
-		for (_Routing_Structures rout : RoutingTable) {
+		int routingTableIndex = 0;
+		for (_Routing_Structures routingTableEntry : RoutingTable) {
 			// ----- dstIpAddr & rout.Subnet_mask ----- 
-			byte [] SubnetMask = StringToByte(rout.Subnet_mask);
+			byte [] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
 		    dstIpAddr = CalDstAndSub(dstIpAddr, SubnetMask);
 			// check rout.Destination Address
-			if (rout.Dst_ip_addr.equals(ByteToString(dstIpAddr))) {
+			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(dstIpAddr))) {
 				break;
 			}
-			else rout_index++;
+			else routingTableIndex++;
 		}
 
 		// 2.
-		_Routing_Structures matchedRout = RoutingTable.get(rout_index);
+		_Routing_Structures matchedRout = RoutingTable.get(routingTableIndex);
 		portNum = matchedRout.Interface;
 		if(matchedRout.Flag.equals("U")) {
 			directTransferIp = dstIpAddr;
@@ -162,29 +172,21 @@ public class IPLayer implements BaseLayer {
 		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).checkARPCache(my_ip, directTransferIp, portNum);
 		
 		// 5.
-		((EthernetLayer) this.getUnderLayer()).RouterSend(portNum, directTransferMac, input);
-		
-		
-		
-		/////////////////////// delete maybe //////////////////////////
-		_IP received = byteToObj(input, input.length);
-		if(srcIsMe(received.ip_src)) {
-			logging.log("Packet rejected: Sent by this host");
-			return false;
-		} else if(!dstIsMe(received.ip_dst)) {
-			logging.log("Packet rejected: Not sent to this host");
-			return false;
-		}
+		((EthernetLayer)this.getUnderLayer()).sendData(input, input.length, portNum, directTransferMac);
 
+
+
+		/////////////////////// delete maybe /////////////////////////
 		int d = getD(received.ip_flag_fragoff);
 		int m = getM(received.ip_flag_fragoff);
 		int offset = getOffset(received.ip_flag_fragoff) * 8;
 		int totLen = byte2ToInt(received.ip_len[0], received.ip_len[1]);
 
 		// If packet is not fragmented.
+		// this would be the common situation in Ping and Pong practice.
 		if(d == 1 && m == 0) {
 			logging.log("Receive unfragmented packet");
-		//	((TCPLayer)this.getUpperLayer(0)).receive(received.ip_data);
+			((EthernetLayer)this.getUnderLayer()).sendData(input, input.length);
 
 		// If packet is fragmented.
 		} else {
