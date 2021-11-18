@@ -173,42 +173,7 @@ public class IPLayer implements BaseLayer {
 		
 		// 5.
 		((EthernetLayer)this.getUnderLayer()).sendData(input, input.length, portNum, directTransferMac);
-
-
-
-		/////////////////////// delete maybe /////////////////////////
-		int d = getD(received.ip_flag_fragoff);
-		int m = getM(received.ip_flag_fragoff);
-		int offset = getOffset(received.ip_flag_fragoff) * 8;
-		int totLen = byte2ToInt(received.ip_len[0], received.ip_len[1]);
-
-		// If packet is not fragmented.
-		// this would be the common situation in Ping and Pong practice.
-		if(d == 1 && m == 0) {
-			logging.log("Receive unfragmented packet");
-			((EthernetLayer)this.getUnderLayer()).sendData(input, input.length);
-
-		// If packet is fragmented.
-		} else {
-			//If acculator array is not set, create new byte[] to accumulate incomming data
-			if(this.packetAccumulator == null || this.packetAccumulator.length != totLen) {
-				this.packetAccumulator = new byte[totLen];
-			}
-
-			// If packet is first ~ last one.
-			if(d == 0 && m == 1) {
-				logging.log("Receive fragmented packet: offset "+offset);
-				System.arraycopy(received.ip_data, 0, this.packetAccumulator, offset, MAX_SIZE);
-
-			// If packet is last one.
-			} else if(d == 0 && m == 0) {
-				logging.log("Receive last fragmented packet");
-				System.arraycopy(received.ip_data, 0, this.packetAccumulator, offset, totLen - offset);
-			//	return ((TCPLayer)this.getUpperLayer(0)).receive(this.packetAccumulator);
-			} else {
-				logging.log("Packet rejected: Unknown D(" + d + ") and M(" + m + ")");
-			}
-		}
+		// recive and send complete.
 		return true;
 	}
 	
