@@ -173,7 +173,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				byte[] proxyMac = macStoB(proxyArpMacWrite.getText());
 
 				if(proxyIp != null && proxyMac != null) {
-					((ARPLayer) m_LayerMgr.getLayer("ARP")).setProxyTable(proxyIp, proxyMac);	
+				//	((ARPLayer) m_LayerMgr.getLayer("ARP")).setProxyTable(proxyIp, proxyMac);	
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong address for adding proxy entry");
 				}
@@ -186,7 +186,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				byte[] proxyIp = ipStoB(proxyArpIpWrite.getText());
 				
 				if(proxyIp != null) {
-					((ARPLayer) m_LayerMgr.getLayer("ARP")).deleteProxyTable(proxyIp);
+				//	((ARPLayer) m_LayerMgr.getLayer("ARP")).deleteProxyTable(proxyIp);
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong address for deleting proxy entry");
 				}

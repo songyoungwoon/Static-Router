@@ -95,12 +95,21 @@ public class IPLayer implements BaseLayer {
         RoutingTable.remove(index);
     }
 	
-	public boolean sendARP(byte[] dstAddr) {
-		logging.log("Send ARP");
-		return ((ARPLayer)RouterDlg.m_LayerMgr.getLayer("ARP")).searchARP(m_sHeader.ip_src.addr, dstAddr);
+	// ----- getPortNum -----
+	public String getPortNum(byte[] srcIpAddr) {
+		for (_Routing_Structures routingTableEntry : RoutingTable) {
+			// ----- dstIpAddr & rout.Subnet_mask ----- 
+			byte [] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
+		    srcIpAddr = CalDstAndSub(srcIpAddr, SubnetMask);
+			// check rout.Destination Address
+			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(srcIpAddr))) {
+				return routingTableEntry.Interface;
+			}
+		}
+		return null;
 	}
 	
-	// ----- Public Methods -----  --> delete maybe
+	// ----> delete maybe <----
 	public boolean send(byte[] input, int length) {
 		if(length > MAX_SIZE) {
 			return sendFrag(input, length);
@@ -111,7 +120,6 @@ public class IPLayer implements BaseLayer {
 			return ((EthernetLayer)this.getUnderLayer()).sendData(bytes, length + HEADER_SIZE);
 		}
 	}
-	
 	
 	// ----- Rout function -----
 	public boolean receive(byte[] input) {
@@ -141,7 +149,6 @@ public class IPLayer implements BaseLayer {
 		byte[] directTransferMac = null;
 		
 		// 1.
-		byte[] tempAddr;
 		int routingTableIndex = 0;
 		for (_Routing_Structures routingTableEntry : RoutingTable) {
 			// ----- dstIpAddr & rout.Subnet_mask ----- 
@@ -168,8 +175,8 @@ public class IPLayer implements BaseLayer {
 		}
 		
 		// 3. 4.
-		//byte[] my_ip = null; // ** not complete **
-		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).checkARPCache(srcIpAddr, directTransferIp, portNum);
+		//byte[] srcIpAddr = null; // ** not complete **
+		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp, portNum);
 		
 		// 5. send complete.
 		return ((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, portNum, directTransferMac);
