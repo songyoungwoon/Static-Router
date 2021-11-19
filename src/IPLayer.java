@@ -126,7 +126,7 @@ public class IPLayer implements BaseLayer {
 		 */
 		
 		// 0.
-		byte[] srcIpAddr = Arrays.copyOfRange(input, 26, 30);
+		byte[] srcIpAddr = null;
 		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
 		byte[] directTransferIp = null;
 		byte[] directTransferMac = null;
