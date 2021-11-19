@@ -66,7 +66,10 @@ public class NILayer implements BaseLayer {
 	// ----- TODO : NIC check ----- 
 	// m_iNumAdapter ?
 	// send after setAdapterNumber 
-	public boolean send(byte[] input, int length) {
+	public boolean send(byte[] input, int length, String portNum) {
+		// ----- setting port ----- 
+		setAdapterNumber(Integer.parseInt(portNum) - 1);
+		
 		ByteBuffer buf = ByteBuffer.wrap(input);
 		logging.log("Send");
 		if (m_AdapterObject.sendPacket(buf) != Pcap.OK) {

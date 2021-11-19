@@ -62,7 +62,7 @@ public class EthernetLayer implements BaseLayer {
 		m_sHeader.enet_type = intToByte2(DATA_TYPE);
 		logging.log("Send data");
 		byte[] bytes = objToByte(m_sHeader, input, length, false);
-		return this.getUnderLayer().RouterSend(bytes, length + HEADER_SIZE, portNum);
+		return ((NILayer) this.getUnderLayer()).send(bytes, length + HEADER_SIZE, portNum);
 	}
 	
 	// Sending
