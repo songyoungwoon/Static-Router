@@ -104,14 +104,14 @@ public class ARPLayer implements BaseLayer {
 			}
 		}
 	}
-	// ---- deleteProxyTable -----	
-	public void deleteProxyTable(byte[] deleteIP) {
-		if(ProxyARPTable.containsKey(ByteToString(deleteIP))) {
-			logging.log("Delete one Proxy table element requested");
-			ProxyARPTable.remove(ByteToString(deleteIP));
-			((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printProxyTable(ProxyARPTable);
-		}
-	}
+//	// ---- deleteProxyTable -----	
+//	public void deleteProxyTable(byte[] deleteIP) {
+//		if(ProxyARPTable.containsKey(ByteToString(deleteIP))) {
+//			logging.log("Delete one Proxy table element requested");
+//			ProxyARPTable.remove(ByteToString(deleteIP));
+//			((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printProxyTable(ProxyARPTable);
+//		}
+//	}
 	
 	// ----- deleteTimeOverARP -----
 	public void deleteTimeOverARP() {
@@ -128,15 +128,15 @@ public class ARPLayer implements BaseLayer {
 		}
 		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable(ARPTable);
 	}
-	// ----- setProxyTable -----
-	public void setProxyTable(byte[] IP_ADDR, byte[] MAC_ADDR) {
-		logging.log("Set one Proxy table element requested");
-		String ip_addr = ByteToString(IP_ADDR);
-		String mac_addr = macBtoS(MAC_ADDR);
-		ProxyARPTable.put(ip_addr, mac_addr);
-		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printProxyTable(ProxyARPTable);
-		
-	}
+//	// ----- setProxyTable -----
+//	public void setProxyTable(byte[] IP_ADDR, byte[] MAC_ADDR) {
+//		logging.log("Set one Proxy table element requested");
+//		String ip_addr = ByteToString(IP_ADDR);
+//		String mac_addr = macBtoS(MAC_ADDR);
+//		ProxyARPTable.put(ip_addr, mac_addr);
+//		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printProxyTable(ProxyARPTable);
+//		
+//	}
 	
 	// ----- sendGARP -----
 	public boolean sendGARP(byte[] srcIP, byte[] srcMac) {
