@@ -95,36 +95,27 @@ public class IPLayer implements BaseLayer {
         RoutingTable.remove(index);
     }
 	
-	public boolean sendARP(byte[] dstAddr) {
-		logging.log("Send ARP");
-		return ((ARPLayer)RouterDlg.m_LayerMgr.getLayer("ARP")).searchARP(m_sHeader.ip_src.addr, dstAddr);
-	}
-	
-	// ----- Public Methods -----  --> delete maybe
-	public boolean send(byte[] input, int length) {
-		if(length > MAX_SIZE) {
-			return sendFrag(input, length);
-		} else {
-			setDataHeader(length, 1, 0, 0);
-			byte[] bytes = objToByte(m_sHeader, input, length);
-			logging.log("Send unfragmented packet");
-			return ((EthernetLayer)this.getUnderLayer()).sendData(bytes, length + HEADER_SIZE);
+	// ----- getPortNum -----
+	public String getPortNum(byte[] srcIpAddr) {
+		for (_Routing_Structures routingTableEntry : RoutingTable) {
+			// ----- dstIpAddr & rout.Subnet_mask ----- 
+			byte [] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
+		    srcIpAddr = CalDstAndSub(srcIpAddr, SubnetMask);
+			// check rout.Destination Address
+			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(srcIpAddr))) {
+				return routingTableEntry.Interface;
+			}
 		}
+		return null;
 	}
-	
 	
 	// ----- Rout function -----
 	public boolean receive(byte[] input) {
-
 		_IP received = byteToObj(input, input.length);
 		if(srcIsMe(received.ip_src)) {
 			logging.log("Packet rejected: Sent by this host");
 			return false;
-		} else if(!dstIsMe(received.ip_dst)) {
-			logging.log("Packet rejected: Not sent to this host");
-			return false;
 		}
-
 		/*
 		 0. input 패킷 뜯어서 목적지 ip 체크 -> ping packet 구조 알아야됨
 		 1. routing table 확인
@@ -135,17 +126,16 @@ public class IPLayer implements BaseLayer {
 		 */
 		
 		// 0.
-		byte[] srcIpAddr = Arrays.copyOfRange(input, 26, 30);
-		byte[] dstIpAddr = null;
+		byte[] srcIpAddr = null;
+		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
 		byte[] directTransferIp = null;
 		byte[] directTransferMac = null;
 		
 		// 1.
-		byte[] tempAddr;
 		int routingTableIndex = 0;
 		for (_Routing_Structures routingTableEntry : RoutingTable) {
 			// ----- dstIpAddr & rout.Subnet_mask ----- 
-			byte [] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
+			byte[] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
 		    dstIpAddr = CalDstAndSub(dstIpAddr, SubnetMask);
 			// check rout.Destination Address
 			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(dstIpAddr))) {
@@ -168,8 +158,8 @@ public class IPLayer implements BaseLayer {
 		}
 		
 		// 3. 4.
-		//byte[] my_ip = null; // ** not complete **
-		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).checkARPCache(srcIpAddr, directTransferIp, portNum);
+		//byte[] srcIpAddr = null; // ** not complete **
+		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp, portNum);
 		
 		// 5. send complete.
 		return ((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, portNum, directTransferMac);

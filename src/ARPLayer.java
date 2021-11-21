@@ -64,14 +64,14 @@ public class ARPLayer implements BaseLayer {
 	}
 	
 	// ----- getDstMac -----
-	public byte[] getDstMac(byte[] srcIP, byte[] dstIP) {
+	public byte[] getDstMac(byte[] srcIP, byte[] dstIP, String portNum) {
 		deleteTimeOverARP();
 		logging.log("Get destination MAC addr requested");
 		String strDstIP = ByteToString(dstIP);
 		if(ARPTable.containsKey(strDstIP) && ARPTable.get(strDstIP) != "??????") {
 			return macStoB(ARPTable.get(strDstIP));
 		}
-		searchARP(srcIP, dstIP);
+		searchARP(srcIP, dstIP, portNum);
 		while (!ARPTable.containsKey(strDstIP) || ARPTable.get(strDstIP) == "??????") {
 			try {
 				Thread.sleep(4);
@@ -81,12 +81,6 @@ public class ARPLayer implements BaseLayer {
 			}
 		}
 		return macStoB(ARPTable.get(strDstIP));
-	}
-	
-	// ----- checkARPCache -----
-	public byte[] checkARPCache(byte[] src_ip, byte[] dst_ip, String portNum) {
-		// return getDstMac(src_ip, dst_ip, portNum);
-		return null;
 	}
 	
 	// ---- deleteARPTable -----
@@ -104,15 +98,7 @@ public class ARPLayer implements BaseLayer {
 			}
 		}
 	}
-//	// ---- deleteProxyTable -----	
-//	public void deleteProxyTable(byte[] deleteIP) {
-//		if(ProxyARPTable.containsKey(ByteToString(deleteIP))) {
-//			logging.log("Delete one Proxy table element requested");
-//			ProxyARPTable.remove(ByteToString(deleteIP));
-//			((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printProxyTable(ProxyARPTable);
-//		}
-//	}
-	
+
 	// ----- deleteTimeOverARP -----
 	public void deleteTimeOverARP() {
 		for (Map.Entry<String, Long> entry : ARPTimeTable.entrySet()) {
@@ -128,30 +114,9 @@ public class ARPLayer implements BaseLayer {
 		}
 		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable(ARPTable);
 	}
-//	// ----- setProxyTable -----
-//	public void setProxyTable(byte[] IP_ADDR, byte[] MAC_ADDR) {
-//		logging.log("Set one Proxy table element requested");
-//		String ip_addr = ByteToString(IP_ADDR);
-//		String mac_addr = macBtoS(MAC_ADDR);
-//		ProxyARPTable.put(ip_addr, mac_addr);
-//		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printProxyTable(ProxyARPTable);
-//		
-//	}
 	
-	// ----- sendGARP -----
-	public boolean sendGARP(byte[] srcIP, byte[] srcMac) {
-		this.setHeaderToEnetAndIP();
-		m_sHeader.arp_op = intToByte2(0x0001);
-		m_sHeader.arp_enet_srcaddr = srcMac;
-		m_sHeader.arp_ip_srcaddr = srcIP;
-		m_sHeader.arp_enet_dstaddr = new byte[6];
-		m_sHeader.arp_ip_dstaddr = srcIP;
-		byte[] bytes = objToByte(m_sHeader);
-		logging.log("Send GARP");
-		return ((EthernetLayer) getUnderLayer()).sendARP(bytes, 28);
-	}
 	// ----- searchARP -----
-	public boolean searchARP(byte[] srcIP, byte[] dstIP) {
+	public boolean searchARP(byte[] srcIP, byte[] dstIP, String portNum) {
 		deleteTimeOverARP();
 		String dstIP_String = ByteToString(dstIP);
 		// exist ARPTable
@@ -173,11 +138,13 @@ public class ARPLayer implements BaseLayer {
 			m_sHeader.arp_ip_dstaddr = dstIP;
 			byte[] bytes = objToByte(m_sHeader);
 			logging.log("Send ARP Request");
-			return ((EthernetLayer) getUnderLayer()).sendARP(bytes, 28);
+			return ((EthernetLayer) getUnderLayer()).sendARP(bytes, 28, portNum);
 		}
 	}
 
+	// ----- set portNum -----
 	public boolean sendReply(byte[] srcMacAddr, byte[] srcIpAddr, byte[] dstMacAddr, byte[] dstIpAddr) {
+		String portNum = ((IPLayer) getUpperLayer(0)).getPortNum(srcIpAddr);
 		this.setHeaderToEnetAndIP();
 		m_sHeader.arp_op = intToByte2(0x0002);
 		m_sHeader.arp_enet_srcaddr = dstMacAddr;
@@ -186,7 +153,7 @@ public class ARPLayer implements BaseLayer {
 		m_sHeader.arp_ip_dstaddr = srcIpAddr;
 		byte[] bytes = objToByte(m_sHeader);
 		logging.log("Send ARP Reply");
-		return ((EthernetLayer) getUnderLayer()).sendARP(bytes, 28);
+		return ((EthernetLayer) getUnderLayer()).sendARP(bytes, 28, portNum);
 	}
 
 	public synchronized boolean receive(byte[] input) {
