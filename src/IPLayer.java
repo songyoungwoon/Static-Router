@@ -127,7 +127,19 @@ public class IPLayer implements BaseLayer {
 		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp);
 		
 		// 5. send complete.
-		return ((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, directTransferMac);
+		if (matchedRout.Interface.equals("")) {
+			return this.send(input, input.length, directTransferMac);
+		}
+		else if (matchedRout.Interface.equals("")) {
+			return ((IPLayer) this.getUpperLayer(1)).send(input, input.length, directTransferMac);
+		}
+		return false;
+	}
+	
+	// ----- send -----
+	public boolean send(byte[] input, int length, byte[] directTransferMac) {
+		((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, directTransferMac);
+		return true;
 	}
 	
 	// ----- Private Methods -----

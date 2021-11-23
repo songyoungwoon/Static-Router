@@ -110,18 +110,25 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	String Text;
 
 	public static void main(String[] args) {
-		// Adding layers
-		m_LayerMgr.addLayer(new RoutingTable("RT"));	
+		// Adding layers	
 		m_LayerMgr.addLayer(new NILayer("NI"));
 		m_LayerMgr.addLayer(new EthernetLayer("Ethernet"));
-		m_LayerMgr.addLayer(new ARPLayer("ARP"));
 		m_LayerMgr.addLayer(new IPLayer("IP"));
+		
+		m_LayerMgr.addLayer(new ARPLayer("ARP"));
+		
+		m_LayerMgr.addLayer(new NILayer("NI2"));
+		m_LayerMgr.addLayer(new EthernetLayer("Ethernet2"));
+		m_LayerMgr.addLayer(new IPLayer("IP2"));
+		
+		m_LayerMgr.addLayer(new RoutingTable("RT"));
 		m_LayerMgr.addLayer(new RouterDlg("GUI"));
 		
 		// Connecting Layers
 		//m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *GUI )");
 		//m_LayerMgr.connectLayers("Ethernet ( *ARP (+IP )");
-		m_LayerMgr.connectLayers("NI ( *Ethernet ( *ARP ( +IP ) (*IP ( *GUI ) ) ) ) ) ");
+		m_LayerMgr.connectLayers("NI ( *Ethernet ( *ARP ( +IP ) ( *IP ( *RT ( *GUI ) ) ) ) ) ");
+		
 	}
 
 	// print ARP Table arp cache area
