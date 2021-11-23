@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -48,7 +49,15 @@ public class RouterDlg extends JFrame implements BaseLayer {
 //	private JTextField gratuitousArpWrite;
 
 	Container contentPane;
+	
+	JCheckBox flagUp;
+	JCheckBox flagGateway;
+	JCheckBox flagHost;
 
+	JTextArea routerTableItemArea;
+	JTextArea destinationArea;
+	JTextArea netmaskArea;
+	JTextArea gatewayArea;
 	JTextArea routerTableArea;
 	JTextArea arpCacheArea;
 //	JTextArea ChattingArea;
@@ -62,6 +71,11 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	JLabel labelsrcMac;
 	JLabel labeldstIp;
 	JLabel labelArpIp;
+	JLabel labelDestination;
+	JLabel labelNetmask;
+	JLabel labelGateway;
+	JLabel labelFlag;
+	JLabel labelInterface;
 //	JLabel labelProxyIp;
 //	JLabel labelProxyMac;
 //	JLabel labeldevice;
@@ -69,7 +83,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 //	JLabel labelFileName;
 //	JLabel labelFileLoading;
 
-	
+	JButton Router_Table_Entry_Setting_Button;
 	JButton Router_Add_Button;
 	JButton Router_Delete_Button;
 	JButton Setting_Button;
@@ -82,7 +96,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 //	JButton Gratuitous_Arp_Button;
 //	JButton Find_File_Button;
 //	JButton File_send_Button;
-
 //	private JButton fileUploadButton;
 //	private JButton fileSendButton;
 
@@ -90,6 +103,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 	static JComboBox<String> NICComboBox_1;
 	static JComboBox<String> NICComboBox_2;
+	static JComboBox<String> routerInterfaceComboBox;
 
 	int adapterNumber = 0;
 
@@ -156,14 +170,16 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			}
 			// router delete button
 			if (e.getSource() == Router_Delete_Button) {
-				String arpIpStr = routerTableWrite.getText();
-				byte[] arpIp = ipStoB(arpIpStr);
-				if(arpIp != null) {
-					((ARPLayer) m_LayerMgr.getLayer("IP")).deleteARPTable(arpIp, 1);	
-				} else {
-					JOptionPane.showMessageDialog(null, "Wrong IP address for basic ARP");
-				}
-				routerTableWrite.setText("");
+				
+				
+//				String arpIpStr = routerTableWrite.getText();
+//				byte[] arpIp = ipStoB(arpIpStr);
+//				if(arpIp != null) {
+//					((ARPLayer) m_LayerMgr.getLayer("IP")).deleteARPTable(arpIp, 1);	
+//				} else {
+//					JOptionPane.showMessageDialog(null, "Wrong IP address for basic ARP");
+//				}
+//				routerTableWrite.setText("");
 			}
 			
 
@@ -200,6 +216,13 @@ public class RouterDlg extends JFrame implements BaseLayer {
 //				((ARPLayer) m_LayerMgr.getLayer("ARP")).deleteARPTable(null, 0);
 //				arpCacheWrite.setText("");
 //			}
+			
+			// -----router table entry
+			//
+			if(flagUp.isSelected()) {
+				
+			}
+			
 			
 			
 			// -----setting------------------------------------------------------------------------------------
@@ -328,7 +351,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 		setTitle("ARP Router Protocol");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(450, 150, 1250, 880);
+		setBounds(450, 150, 1150, 880);
 		contentPane = new JPanel();
 		((JComponent) contentPane).setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -356,17 +379,22 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		routerTableArea.setBounds(0, 0, 680, 310);
 		routerEditorPanel.add(routerTableArea);// router table edit
 		
-		// router table delete button
-		Router_Add_Button = new JButton("Add");
-		Router_Add_Button.setBounds(100, 340, 210, 45);
-		Router_Add_Button.addActionListener(new SetAddressListener());
-		routerPanel.add(Router_Add_Button);// router Delete button
+		// router table item area
+		routerTableArea = new JTextArea();
+		routerTableArea.setBounds(50, 350, 200, 30);
+		routerEditorPanel.add(routerTableArea);// router table edit
+		
+//		// router table add button
+//		Router_Add_Button = new JButton("Add");
+//		Router_Add_Button.setBounds(100, 340, 210, 45);
+//		Router_Add_Button.addActionListener(new SetAddressListener());
+//		routerPanel.add(Router_Add_Button);// router Delete button
 		
 		// router table delete button
 		Router_Delete_Button = new JButton("Delete");
-		Router_Delete_Button.setBounds(390, 340, 210, 45);
+		Router_Delete_Button.setBounds(390, 350, 100, 30);
 		Router_Delete_Button.addActionListener(new SetAddressListener());
-		routerPanel.add(Router_Delete_Button);// router Delete button
+		routerEditorPanel.add(Router_Delete_Button);// router Delete button
 
 //		// arp cache input panel
 //		JPanel arpCacheInputPanel = new JPanel();// arp cache input write panel
@@ -469,14 +497,106 @@ public class RouterDlg extends JFrame implements BaseLayer {
 //		Arp_Cache_All_Delete_Button.addActionListener(new SetAddressListener());
 //		arpPanel.add(Arp_Cache_All_Delete_Button);// arp cache All Delete button
 
-		// -----setting---------------------------------------------------------------------------------
-		// setting address panel
+		// -----routerEntry---------------------------------------------------------------------------------
+		// routerEntry panel
 		JPanel routerEntryPanel = new JPanel();
 		routerEntryPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Router Table Entry",
 				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		routerEntryPanel.setBounds(720, 10, 500, 400);
+		routerEntryPanel.setBounds(720, 10, 400, 400);
 		contentPane.add(routerEntryPanel);
 		routerEntryPanel.setLayout(null);
+		
+		// destination
+		labelDestination = new JLabel("Destination");
+		labelDestination.setBounds(50, 50, 90, 20);
+		routerEntryPanel.add(labelDestination);
+		
+		JPanel destinationPanel = new JPanel();
+		destinationPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		destinationPanel.setBounds(140, 50, 200, 20);
+		routerEntryPanel.add(destinationPanel);
+		destinationPanel.setLayout(null);
+
+		destinationArea = new JTextArea();
+		destinationArea.setBounds(2, 2, 200, 20);
+		destinationPanel.add(destinationArea);
+		
+		// netmask
+		labelNetmask = new JLabel("Netmask");
+		labelNetmask.setBounds(50, 100, 90, 20);
+		routerEntryPanel.add(labelNetmask);
+		
+		JPanel netmaskPanel = new JPanel();
+		netmaskPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		netmaskPanel.setBounds(140, 100, 200, 20);
+		routerEntryPanel.add(netmaskPanel);
+		netmaskPanel.setLayout(null);
+
+		netmaskArea = new JTextArea();
+		netmaskArea.setBounds(2, 2, 200, 20);
+		netmaskPanel.add(netmaskArea);
+		
+		// gateway
+		labelGateway = new JLabel("Gateway");
+		labelGateway.setBounds(50, 150, 90, 20);
+		routerEntryPanel.add(labelGateway);
+		
+		JPanel gatewayPanel = new JPanel();
+		gatewayPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		gatewayPanel.setBounds(140, 150, 200, 20);
+		routerEntryPanel.add(gatewayPanel);
+		gatewayPanel.setLayout(null);
+
+		gatewayArea = new JTextArea();
+		gatewayArea.setBounds(2, 2, 200, 20);
+		gatewayPanel.add(gatewayArea);
+		
+		// flag
+		labelFlag = new JLabel("Flag");
+		labelFlag.setBounds(50, 200, 90, 20);
+		routerEntryPanel.add(labelFlag);
+		
+		JPanel flagPanel = new JPanel();
+		flagPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		flagPanel.setBounds(140, 200, 200, 20);
+		routerEntryPanel.add(flagPanel);
+		flagPanel.setLayout(null);
+
+		flagUp = new JCheckBox("UP", false);
+		flagUp.setBounds(0, 0, 55, 20);
+		flagPanel.add(flagUp);
+		
+		flagGateway = new JCheckBox("Gateway", false);
+		flagGateway.setBounds(55, 0, 85, 20);
+		flagPanel.add(flagGateway);	
+		
+		flagHost = new JCheckBox("Host", false);
+		flagHost.setBounds(140, 0, 60, 20);
+		flagPanel.add(flagHost);
+		
+		// interface
+		labelInterface = new JLabel("Interface");
+		labelInterface.setBounds(50, 250, 90, 20);
+		routerEntryPanel.add(labelInterface);
+		
+		JPanel interfacePanel = new JPanel();
+		interfacePanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		interfacePanel.setBounds(140, 250, 200, 20);
+		routerEntryPanel.add(interfacePanel);
+		interfacePanel.setLayout(null);
+		
+		String[] port = {"Port1", "Port2"};
+		routerInterfaceComboBox = new JComboBox(port);
+		routerInterfaceComboBox.setBounds(0, 0, 200, 20);
+		interfacePanel.add(routerInterfaceComboBox);
+		
+		// setting button
+		Router_Table_Entry_Setting_Button = new JButton("Setting");// setting
+		Router_Table_Entry_Setting_Button.setBounds(100, 315, 200, 45);
+		Router_Table_Entry_Setting_Button.addActionListener(new SetAddressListener());
+		routerEntryPanel.add(Router_Table_Entry_Setting_Button);
+
+		
 
 //		labelsrcIp = new JLabel("Source IP Address");
 //		labelsrcIp.setBounds(20, 120, 170, 20);
@@ -577,7 +697,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		JPanel settingPanel = new JPanel();
 		settingPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "setting",
 				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		settingPanel.setBounds(720, 420, 500, 400);
+		settingPanel.setBounds(720, 420, 400, 400);
 		contentPane.add(settingPanel);
 		settingPanel.setLayout(null);
 
