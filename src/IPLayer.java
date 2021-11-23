@@ -126,13 +126,15 @@ public class IPLayer implements BaseLayer {
 		//byte[] srcIpAddr = null; // ** not complete **
 		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp);
 		
-		// 5. send complete.
+		
+		// 5.send
 		if (matchedRout.Interface.equals("")) {
 			return this.send(input, input.length, directTransferMac);
 		}
 		else if (matchedRout.Interface.equals("")) {
 			return ((IPLayer) this.getUpperLayer(1)).send(input, input.length, directTransferMac);
 		}
+		
 		return false;
 	}
 	
@@ -171,20 +173,6 @@ public class IPLayer implements BaseLayer {
 		return String.format("%d.%d.%d.%d", (data[0] & 0xff), (data[1] & 0xff), (data[2] & 0xff), (data[3] & 0xff));
 	}
 	
-
-	private void setDataHeader(int len, int D, int M, int fragoff) {
-		this.m_sHeader.ip_len = intToByte2(len);
-		// D : Do not fragment
-		// M : More fragment
-		//     if packet is not fragmented, D == 1, M == 0
-		//     if packet is fragmented and is first ~ before last fragment, D == 0, M == 1
-		//     if packet is fragmented and is last fragment, D == 0, M == 0
-		// Here's format of ip_flag_fragoff.
-		//     Size(bit):	1	1	1	13
-		//     Content:		0	D	M	fragment offset
-		this.m_sHeader.ip_flag_fragoff[0] = (byte) (((D & 0x1) << 6) | ((M & 0x1) << 5) | ((fragoff & 0x1f00) >> 8));
-		this.m_sHeader.ip_flag_fragoff[1] = (byte) (fragoff & 0xff);
-	}
 
     private byte[] removeIPHeader(byte[] input, int length) {
 	    byte[] cpyInput = new byte[length - HEADER_SIZE];

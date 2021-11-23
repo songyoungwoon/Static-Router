@@ -106,7 +106,6 @@ public class EthernetLayer implements BaseLayer {
 			return false;
 		}
 		
-		// ***** ping test's first macaddr is not determined *****
 		if(isBroadcast(received.enet_dstaddr)) {
 			if(frameType == ARP_TYPE) {
 				logging.log("Receive ARP frame");
