@@ -92,26 +92,27 @@ public class IPLayer implements BaseLayer {
 			return false;
 		}
 		/*
-		 0. input 패킷 뜯어서 목적지 ip 체크 -> ping packet 구조 알아야됨
-		 1. routing table 확인
-		 2. 해당 network port, gateway ip 확인 ( 직접 연결 됐으면 ㄴ )
-		 3. ip에 해당하는 arp table 뒤적 
-		 4. 4.에서 arp 없으면 arp request 후 reply 될 때까지 ㄱㄷ
-		 5. dst mac addr와 같이 send -> dst addr은 ether에서 header로 적을듯 
+		 input 패킷 뜯어서 목적지 ip 체크 -> ping packet 구조 알아야됨
+		 routing table 확인
+		  해당 network port, gateway ip 확인 ( 직접 연결 됐으면 ㄴ )
+		 ip에 해당하는 arp table 뒤적 
+		 arp 없으면 arp request 후 reply 될 때까지 ㄱㄷ
+		 dst mac addr와 같이 send -> dst addr은 ether에서 header로 적을듯 
 		 */
 		
-		// 0.
+		// 1.address
 		byte[] srcIpAddr = null;
 		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
 		byte[] directTransferIp = null;
 		byte[] directTransferMac = null;
 		
-		// 1.
-		// 2.
+		// 2.matchedRout
 		ArrayList<String> matchedRoutStr = ((RoutingTable) this.getUpperLayer(0)).getMatchedRout(dstIpAddr);
 		_Routing_Structures matchedRout = new _Routing_Structures(matchedRoutStr.get(0), matchedRoutStr.get(1), matchedRoutStr.get(2), matchedRoutStr.get(3), matchedRoutStr.get(4));
 
-		String portNum = matchedRout.Interface;
+		// 3.Flag
+		// portNum not determined
+		int portNum;
 		if(matchedRout.Flag.equals("U")) {
 			// i don't read a book
 		}
@@ -122,12 +123,11 @@ public class IPLayer implements BaseLayer {
 			directTransferIp = dstIpAddr;
 		}
 		
-		// 3. 4.
 		//byte[] srcIpAddr = null; // ** not complete **
-		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp, portNum);
+		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp);
 		
 		// 5. send complete.
-		return ((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, portNum, directTransferMac);
+		return ((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, directTransferMac);
 	}
 	
 	// ----- bit And operation -----

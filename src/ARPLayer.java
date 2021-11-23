@@ -64,7 +64,7 @@ public class ARPLayer implements BaseLayer {
 	}
 	
 	// ----- getDstMac -----
-	public byte[] getDstMac(byte[] srcIP, byte[] dstIP, String portNum) {
+	public byte[] getDstMac(byte[] srcIP, byte[] dstIP) {
 		deleteTimeOverARP();
 		logging.log("Get destination MAC addr requested");
 		String strDstIP = ByteToString(dstIP);
