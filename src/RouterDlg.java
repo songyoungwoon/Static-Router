@@ -129,7 +129,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			//-----router cache--------------------------------------------------------------------------------------
 			// router all delete button
 			if (e.getSource() == Router_Delete_Button) {
-				((IPLayer) m_LayerMgr.getLayer("IP")).deleteRoutingTableEntry(0);
+				((RoutingTable) m_LayerMgr.getLayer("RT")).deleteRoutingTableEntry(0);
 				routerTableWrite.setText("");
 			}
 			
@@ -151,15 +151,17 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				
 				String flag = "";
 				if(flagUp.isSelected()) {
-					flag = "Up";
-				}else if(flagGateway.isSelected()){
-					flag = "Gateway";
-				}else if(flagHost.isSelected()) {
-					flag = "Host";
+					flag = "U";
+				}
+				if(flagGateway.isSelected()){
+					flag += "G";
+				}
+				if(flagHost.isSelected()) {
+					flag += "H";
 				}
 				
 				String interface_ = routerInterfaceComboBox.getSelectedItem().toString();
-				((IPLayer) m_LayerMgr.getLayer("IP")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
+				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
 			}
 			
 			
