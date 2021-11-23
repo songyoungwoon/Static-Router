@@ -111,6 +111,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 	public static void main(String[] args) {
 		// Adding layers
+		m_LayerMgr.addLayer(new RoutingTable("RT"));	
 		m_LayerMgr.addLayer(new NILayer("NI"));
 		m_LayerMgr.addLayer(new EthernetLayer("Ethernet"));
 		m_LayerMgr.addLayer(new ARPLayer("ARP"));

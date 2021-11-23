@@ -14,9 +14,6 @@ public class IPLayer implements BaseLayer {
     private ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
     private _IP m_sHeader;
 
-    // ----- Routing Table -----
-    private ArrayList<_Routing_Structures> RoutingTable = new ArrayList<>();
-    
 	private byte[] packetAccumulator;
 	private Logger logging;
 	
@@ -86,28 +83,6 @@ public class IPLayer implements BaseLayer {
 			ip_data = null;
 		}
 	}
-
-	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
-        return RoutingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface));
-    }
-
-	public void deleteRoutingTableEntry(int index) {
-        RoutingTable.remove(index);
-    }
-	
-	// ----- getPortNum -----
-	public String getPortNum(byte[] srcIpAddr) {
-		for (_Routing_Structures routingTableEntry : RoutingTable) {
-			// ----- dstIpAddr & rout.Subnet_mask ----- 
-			byte [] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
-		    srcIpAddr = CalDstAndSub(srcIpAddr, SubnetMask);
-			// check rout.Destination Address
-			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(srcIpAddr))) {
-				return routingTableEntry.Interface;
-			}
-		}
-		return null;
-	}
 	
 	// ----- Rout function -----
 	public boolean receive(byte[] input) {
@@ -132,29 +107,19 @@ public class IPLayer implements BaseLayer {
 		byte[] directTransferMac = null;
 		
 		// 1.
-		int routingTableIndex = 0;
-		for (_Routing_Structures routingTableEntry : RoutingTable) {
-			// ----- dstIpAddr & rout.Subnet_mask ----- 
-			byte[] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
-		    dstIpAddr = CalDstAndSub(dstIpAddr, SubnetMask);
-			// check rout.Destination Address
-			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(dstIpAddr))) {
-				break;
-			}
-			else routingTableIndex++;
-		}
-
 		// 2.
-		_Routing_Structures matchedRout = RoutingTable.get(routingTableIndex);
+		ArrayList<String> matchedRoutStr = ((RoutingTable) this.getUpperLayer(0)).getMatchedRout(dstIpAddr);
+		_Routing_Structures matchedRout = new _Routing_Structures(matchedRoutStr.get(0), matchedRoutStr.get(1), matchedRoutStr.get(2), matchedRoutStr.get(3), matchedRoutStr.get(4));
+
 		String portNum = matchedRout.Interface;
 		if(matchedRout.Flag.equals("U")) {
-			directTransferIp = dstIpAddr;
+			// i don't read a book
 		}
 		else if(matchedRout.Flag.equals("UG")) {
 			directTransferIp = StringToByte(matchedRout.Gateway);
 		}
 		else if(matchedRout.Flag.equals("UH")) {
-			// i don't read a book
+			directTransferIp = dstIpAddr;
 		}
 		
 		// 3. 4.
@@ -218,58 +183,6 @@ public class IPLayer implements BaseLayer {
 		this.m_sHeader.ip_flag_fragoff[0] = (byte) (((D & 0x1) << 6) | ((M & 0x1) << 5) | ((fragoff & 0x1f00) >> 8));
 		this.m_sHeader.ip_flag_fragoff[1] = (byte) (fragoff & 0xff);
 	}
-
-	private int getD(byte[] flagFragoff) {
-		return (int)((flagFragoff[0] & 0x40) >> 6);
-	}
-
-	private int getM(byte[] flagFragoff) {
-		return (int)((flagFragoff[0] & 0x20) >> 5);
-	}
-
-	private int getOffset(byte[] flagFragoff) {
-		return (int)(((flagFragoff[0] & 0x1f) << 8) | ((flagFragoff[1] & 0xff)));
-	}
-
-    private boolean sendFrag(byte[] input, int length) {
-    	
-        byte[] bytes = new byte[MAX_SIZE];
-
-        // First fragment
-		setDataHeader(length, 0, 1, 0);
-        System.arraycopy(input, 0, bytes, 0, MAX_SIZE);
-        bytes = objToByte(m_sHeader, bytes, MAX_SIZE);
-		logging.log("Send fragmented packet: offset 0");
-        ((EthernetLayer)this.getUnderLayer()).sendData(bytes, bytes.length);
-
-        // Second ~ before last fragment
-        int maxLen = length / MAX_SIZE;
-        for (int i = 1; i<maxLen; i++) {
-           	if (i != maxLen - 1 || length % MAX_SIZE != 0) {
-				setDataHeader(length, 0, 1, i * MAX_OFFSET);
-				System.arraycopy(input, MAX_SIZE*i, bytes, 0, MAX_SIZE);
-				bytes = objToByte(m_sHeader, bytes, MAX_SIZE);
-				logging.log("Send fragmented packet: offset "+(i * MAX_OFFSET * 8));
-				((EthernetLayer)this.getUnderLayer()).sendData(bytes, bytes.length);
-				try {
-					Thread.sleep(4);
-				} catch (InterruptedException e) {
-					logging.error("Send fragment", e);
-					return false;
-				}
-           	}
-        }
-        
-		// Last fragment
-		setDataHeader(length, 0, 0, MAX_OFFSET * maxLen);
-		if(length % MAX_SIZE != 0) {
-			bytes = new byte[length % MAX_SIZE];
-		}
-		System.arraycopy(input, length - (length%MAX_SIZE), bytes, 0, length%MAX_SIZE);
-		bytes = objToByte(m_sHeader, bytes, bytes.length);
-		logging.log("Send last fragmented packet");
-		return ((EthernetLayer)this.getUnderLayer()).sendData(bytes, bytes.length);
-    }
 
     private byte[] removeIPHeader(byte[] input, int length) {
 	    byte[] cpyInput = new byte[length - HEADER_SIZE];

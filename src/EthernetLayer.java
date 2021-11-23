@@ -62,16 +62,16 @@ public class EthernetLayer implements BaseLayer {
 		m_sHeader.enet_type = intToByte2(DATA_TYPE);
 		logging.log("Send data");
 		byte[] bytes = objToByte(m_sHeader, input, length, false);
-		return ((NILayer) this.getUnderLayer()).send(bytes, length + HEADER_SIZE, portNum);
+		return ((NILayer) this.getUnderLayer()).send(bytes, length + HEADER_SIZE);
 	}
 	
 	// Sending
-	public boolean sendARP(byte[] input, int length, String portNum) {
+	public boolean sendARP(byte[] input, int length) {
 		setEnetDstAddress(BROADCAST);
 		m_sHeader.enet_type = intToByte2(ARP_TYPE);
 		logging.log("Send ARP");
 		byte[] bytes = objToByte(m_sHeader, input, length, false);
-		return ((NILayer)this.getUnderLayer()).send(bytes, length + HEADER_SIZE, portNum);
+		return ((NILayer)this.getUnderLayer()).send(bytes, length + HEADER_SIZE);
 	}
 
 	// ----- delete maybe -----
