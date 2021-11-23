@@ -130,16 +130,6 @@ public class IPLayer implements BaseLayer {
 		return ((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, directTransferMac);
 	}
 	
-	// ----- bit And operation -----
-	private byte[] CalDstAndSub(byte[] dstIpAddr, byte[] SubnetMask) {
-		byte[] temp = new byte[dstIpAddr.length];
-		for(int i = 0; i < dstIpAddr.length; i++) {
-			temp[i] = (byte)(dstIpAddr[i] & SubnetMask[i]);
-		}
-		
-		return temp;
-		
-	}
 	// ----- Private Methods -----
 	private byte[] intToByte2(int value) {
 		byte[] temp = new byte[2];
