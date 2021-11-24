@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import org.jnetpcap.Pcap;
@@ -13,62 +14,32 @@ public class NILayer implements BaseLayer {
 	private String pLayerName = null;
 	private BaseLayer p_UnderLayer = null;
 	private ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
-	private int m_iNumAdapter;
-	private Pcap m_AdapterObject;
-	private ArrayList<PcapIf> m_pAdapterList;
-	private StringBuilder errbuf = new StringBuilder();
 	private Logger logging;
 
-	// ----- Static -----
-	static {
-		try {
-			String jnetpcapPath = new File("jnetpcap.dll").getAbsolutePath();
-			System.load(jnetpcapPath);
-			
-			System.out.println("[NI]JNetPcap loded: " + jnetpcapPath);
-		} catch (UnsatisfiedLinkError e) {
-			System.err.println("[NI]JNetPcap failed to load: " + e);
-			System.exit(0);
-		}
-
-	}
+    private Pcap m_AdapterObject;
+    private PcapIf m_pAdapter;
 
 	// ----- Constructor -----
 	public NILayer(String pName) {
-		pLayerName = pName;
-		m_pAdapterList = new ArrayList<PcapIf>();
-		m_iNumAdapter = 0;
-		logging = new Logger(this);
-		setAdapterList();
-	}
+		this.pLayerName = pName;
+		this.logging = new Logger(this);
 
-	public void setAdapterList() {
-		int r = Pcap.findAllDevs(m_pAdapterList, errbuf);
-		logging.log("Adapters found: "+m_pAdapterList.size());
-		if (r != Pcap.OK || m_pAdapterList.isEmpty())
-			logging.panic("No adapters found: " + errbuf.toString(), null);
-	}
+        this.m_pAdapter = RouterDlg.jnet.getPcapIf(); // TODO: need public JNetManager obj
+        if(this.m_pAdapter == null) {
+            logging.panic("No more available adapters", null);
+        }
+        logging.log(this.m_pAdapter.getName() + " installed");
 
-	// ----- Methods -----
-	public void packetStartDriver() {
 		int snaplen = 64 * 1024; // Capture all packets, no trucation
 		int flags = Pcap.MODE_PROMISCUOUS; // capture all packets
 		int timeout = 10 * 1000; // 10 seconds in millis
-		m_AdapterObject = Pcap.openLive(m_pAdapterList.get(m_iNumAdapter).getName(), snaplen, flags, timeout, errbuf);
+        StringBuilder errbuf = new StringBuilder();
+		this.m_AdapterObject = Pcap.openLive(this.m_pAdapter.getName(), snaplen, flags, timeout, errbuf);
 	}
 
-	public void setAdapterNumber(int iNum) {
-		m_iNumAdapter = iNum;
-		packetStartDriver();
-		receive();
-	}
-
-	// ----- TODO : NIC check ----- 
-	// m_iNumAdapter ?
-	// send after setAdapterNumber 
 	public boolean send(byte[] input, int length) {
 		ByteBuffer buf = ByteBuffer.wrap(input);
-		logging.log("Send");
+		logging.log("Send from " + this.m_pAdapter.getName());
 		if (m_AdapterObject.sendPacket(buf) != Pcap.OK) {
 			logging.error(m_AdapterObject.getErr());
 			return false;
@@ -80,17 +51,21 @@ public class NILayer implements BaseLayer {
 		Receive_Thread thread = new Receive_Thread(m_AdapterObject, this.getUpperLayer(0));
 		Thread obj = new Thread(thread);
 		obj.start();
-		logging.log("Receive thread start");
-		return false;
+		logging.log("Receive thread(" + m_pAdapter.getName() + ") start");
+        return true;
 	}
-
-	// ----- Getters & Setters -----
-	public PcapIf getAdapterObject(int iIndex) {
-		return m_pAdapterList.get(iIndex);
+	
+	public byte[] getAdapterIP() {
+		return this.m_pAdapter.getAddresses().get(0).getAddr().getData();
 	}
-
-	public ArrayList<PcapIf> getAdapterList() {
-		return m_pAdapterList;
+	
+	public byte[] getAdapterMAC() {
+		try {
+			return this.m_pAdapter.getHardwareAddress();
+		} catch(IOException err) {
+			err.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

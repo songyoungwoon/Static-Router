@@ -64,14 +64,14 @@ public class ARPLayer implements BaseLayer {
 	}
 	
 	// ----- getDstMac -----
-	public byte[] getDstMac(byte[] srcIP, byte[] dstIP) {
+	public byte[] getDstMac(byte[] dstIP) {
 		deleteTimeOverARP();
 		logging.log("Get destination MAC addr requested");
 		String strDstIP = ByteToString(dstIP);
 		if(ARPTable.containsKey(strDstIP) && ARPTable.get(strDstIP) != "??????") {
 			return macStoB(ARPTable.get(strDstIP));
 		}
-		searchARP(srcIP, dstIP);
+		searchARP(dstIP);
 		while (!ARPTable.containsKey(strDstIP) || ARPTable.get(strDstIP) == "??????") {
 			try {
 				Thread.sleep(4);
@@ -116,7 +116,7 @@ public class ARPLayer implements BaseLayer {
 	}
 	
 	// ----- searchARP -----
-	public boolean searchARP(byte[] srcIP, byte[] dstIP) {
+	public boolean searchARP(byte[] dstIP) {
 		deleteTimeOverARP();
 		String dstIP_String = ByteToString(dstIP);
 		// exist ARPTable
@@ -133,7 +133,7 @@ public class ARPLayer implements BaseLayer {
 			this.setHeaderToEnetAndIP();
 			m_sHeader.arp_op = intToByte2(0x0001);
 			m_sHeader.arp_enet_srcaddr = ((EthernetLayer) getUnderLayer()).getEnetSrcAddress();
-			m_sHeader.arp_ip_srcaddr = srcIP;
+			m_sHeader.arp_ip_srcaddr = ((NILayer)this.getUnderLayer().getUnderLayer()).getAdapterIP();
 			m_sHeader.arp_enet_dstaddr = new byte[6];
 			m_sHeader.arp_ip_dstaddr = dstIP;
 			byte[] bytes = objToByte(m_sHeader);
