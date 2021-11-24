@@ -37,6 +37,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	public File file = null;
 
 	public static LayerManager m_LayerMgr = new LayerManager();
+	public static JNetManager jnet;
 
 	private Logger logging = new Logger(this);
 
@@ -64,7 +65,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	JLabel labelMetircs;
 
 	
-	JButton Router_Table_Entry_Setting_Button;
+	JButton Router_Table_Entry_Add_Button;
 //	JButton Router_Add_Button;
 	JButton Router_Delete_Button;
 	JButton Setting_Button;
@@ -82,6 +83,8 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	String Text;
 
 	public static void main(String[] args) {
+		// Get all adapters
+		jnet = new JNetManager();
 		// Adding layers	
 		m_LayerMgr.addLayer(new NILayer("NI"));
 		m_LayerMgr.addLayer(new EthernetLayer("Ethernet"));
@@ -123,10 +126,9 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	
 	// print routing table area
 	public void printRouterTable(ArrayList<_Routing_Structures> RouterTable) {
-		routerTableArea.setText("Dst_ip_addr\tSubnet_mask\tGateway\tFlag\tInterface\n");
+		routerTableArea.setText("Dst_ip_addr\t\tSubnet_mask\t\tGateway\t\tFlag\tInterface\n");
 		for (_Routing_Structures i :RouterTable) {
-				routerTableArea.append(i.Dst_ip_addr + "\t" + i.Subnet_mask + "\t" + i.Gateway + "\t" + i.Flag + "\t" + i.Interface + "\n");
-
+				routerTableArea.append(i.Dst_ip_addr + "\t\t" + i.Subnet_mask + "\t\t" + i.Gateway + "\t\t" + i.Flag + "\t" + i.Interface + "\n");
 		}
 	}
 
@@ -152,7 +154,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			
 			// -----router table entry
 			// setting button
-			if(e.getSource() == Router_Table_Entry_Setting_Button) {
+			if(e.getSource() == Router_Table_Entry_Add_Button) {
 				String destination = destinationArea.getText();
 				String netmask = netmaskArea.getText();
 				String gateway = gatewayArea.getText();
@@ -175,8 +177,8 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				
 //				String metrics = routerMetricsComboBox.getSelectedItem().toString();
 				
-//				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
-
+				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
+				
 				destinationArea.setText("");
 				netmaskArea.setText("");
 				gatewayArea.setText("");
@@ -235,7 +237,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 		// router table area
 		routerTableArea = new JTextArea();
-		routerTableArea.append("IP\t\tMAC\t\tS\n");
+		routerTableArea.append("Dst_ip_addr\t\tSubnet_mask\t\tGateway\t\tFlag\tInterface\n");
 		routerTableArea.setEditable(false);
 		routerTableArea.setBounds(0, 0, 680, 210);
 		routerEditorPanel.add(routerTableArea);// router table edit
@@ -288,7 +290,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		JPanel routerEntryPanel = new JPanel();
 		routerEntryPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Router Table Entry",
 				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		routerEntryPanel.setBounds(720, 10, 400, 400);
+		routerEntryPanel.setBounds(720, 10, 400, 600);
 		contentPane.add(routerEntryPanel);
 		routerEntryPanel.setLayout(null);
 		
@@ -394,10 +396,10 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		interfacePanel.add(routerInterfaceComboBox);
 
 		// Add button
-		Router_Table_Entry_Setting_Button = new JButton("Add");// Add
-		Router_Table_Entry_Setting_Button.setBounds(100, 320, 200, 45);
-		Router_Table_Entry_Setting_Button.addActionListener(new SetAddressListener());
-		routerEntryPanel.add(Router_Table_Entry_Setting_Button);
+		Router_Table_Entry_Add_Button = new JButton("Add");// Add
+		Router_Table_Entry_Add_Button.setBounds(100, 520, 200, 45);
+		Router_Table_Entry_Add_Button.addActionListener(new SetAddressListener());
+		routerEntryPanel.add(Router_Table_Entry_Add_Button);
 		
 		
 		// -----setting---------------------------------------------------------------------------------

@@ -35,7 +35,9 @@ public class RoutingTable implements BaseLayer {
 	}
     
 	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
-        return routingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface));
+		routingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface));
+		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printRouterTable(routingTable);
+		return true;
     }
 
 	public void deleteRoutingTableEntry() {
