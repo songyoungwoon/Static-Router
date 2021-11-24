@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class RoutingTable implements BaseLayer {
 	// ----- Properties -----
@@ -56,6 +57,54 @@ public class RoutingTable implements BaseLayer {
 	public void deleteRoutingTableEntry(int index) {
         routingTable.remove(index);
     }
+
+    public boolean rout(byte[] dstIpAddr) {
+    	/*
+		 input 패킷 뜯어서 목적지 ip 체크 -> ping packet 구조 알아야됨
+		 routing table 확인
+		  해당 network port, gateway ip 확인 ( 직접 연결 됐으면 ㄴ )
+		 ip에 해당하는 arp table 뒤적
+		 arp 없으면 arp request 후 reply 될 때까지 ㄱㄷ
+		 dst mac addr와 같이 send -> dst addr은 ether에서 header로 적을듯
+		 */
+
+		// 1.address
+		byte[] directTransferIp = null;
+		byte[] directTransferMac = null;
+
+		// *.if dstIP_Addr is me, do nothing
+
+		// 2.matchedRout
+		//ArrayList<String> matchedRoutStr = ((RoutingTable) this.getUpperLayer(0)).getMatchedRout(dstIpAddr);
+		//new _Routing_Structures(matchedRoutStr.get(0), matchedRoutStr.get(1), matchedRoutStr.get(2), matchedRoutStr.get(3), matchedRoutStr.get(4), matchedRoutStr.get(5));
+
+		// 3.Flag
+		// portNum not determined
+    	_Routing_Structures matchedRout = getMatchedRout(dstIpAddr);
+		int portNum;
+		if(matchedRout.Flag.equals("U")) {
+			// i don't read a book
+		}
+		else if(matchedRout.Flag.equals("UG")) {
+			directTransferIp = StringToByte(matchedRout.Gateway);
+		}
+		else if(matchedRout.Flag.equals("UH")) {
+			directTransferIp = dstIpAddr;
+		}
+
+		// 4.ARP check : byte[] srcIpAddr = null; // ** not complete **
+		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp);
+
+		// 5.send
+		if (matchedRout.metric.equals("1")) {
+			return this.send(input, input.length, directTransferMac);
+		}
+		else if (matchedRout.metric.equals("2")) {
+			return ((IPLayer) this.getUpperLayer(1)).send(input, input.length, directTransferMac);
+		}
+
+		return false;
+	}
 	
 	public _Routing_Structures getMatchedRout(byte[] dstIpAddr) {
 		int index = 0;
