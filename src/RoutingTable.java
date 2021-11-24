@@ -52,8 +52,8 @@ public class RoutingTable implements BaseLayer {
         return routingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface));
     }
 
-	public void deleteRoutingTableEntry(int index) {
-        routingTable.remove(index);
+	public void deleteRoutingTableEntry() {
+        routingTable.clear();
     }
 
     public boolean rout(byte[] input) {
