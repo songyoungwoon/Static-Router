@@ -26,25 +26,6 @@ public class IPLayer implements BaseLayer {
 		logging = new Logger(this);
 	}
     
-    // ----- Routing Structures -----
-    private class _Routing_Structures {
-    	String Dst_ip_addr = null;
-    	String Subnet_mask = null;
-    	String Gateway = null;
-    	String Flag = null;
-    	String Interface = null;
-    	String metric = null;
-
-		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface, String metric) {
-            this.Dst_ip_addr = Dst_ip_addr;
-            this.Subnet_mask = Subnet_mask;
-            this.Gateway = Gateway;
-            this.Flag = Flag;
-            this.Interface = Interface;
-            this.metric = metric;
-        }
-    }
-    
 	// ----- Structures -----
     private class _IP_ADDR {
         byte[] addr = new byte[4];
@@ -92,8 +73,8 @@ public class IPLayer implements BaseLayer {
 	}
 	
 	// ----- send -----
-	public boolean send(byte[] input, int length, byte[] directTransferMac) {
-		((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, directTransferMac);
+	public boolean send(byte[] input, int length, byte[] directTransferIp) {
+		((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, directTransferIp);
 		return true;
 	}
 	
