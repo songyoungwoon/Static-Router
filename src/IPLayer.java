@@ -88,9 +88,7 @@ public class IPLayer implements BaseLayer {
 	
 	// ----- Rout function -----
 	public boolean receive(byte[] input) {
-		byte[] srcIpAddr = null; //empty for now
-		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
-		return ((RoutingTable)this.getUpperLayer(0)).rout(dstIpAddr);
+		return ((RoutingTable)this.getUpperLayer(0)).rout(input);
 	}
 	
 	// ----- send -----

@@ -58,7 +58,7 @@ public class RoutingTable implements BaseLayer {
         routingTable.remove(index);
     }
 
-    public boolean rout(byte[] dstIpAddr) {
+    public boolean rout(byte[] input) {
     	/*
 		 input 패킷 뜯어서 목적지 ip 체크 -> ping packet 구조 알아야됨
 		 routing table 확인
@@ -69,18 +69,18 @@ public class RoutingTable implements BaseLayer {
 		 */
 
 		// 1.address
+		byte[] srcIpAddr = null; //empty for now
+		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
 		byte[] directTransferIp = null;
 		byte[] directTransferMac = null;
 
 		// *.if dstIP_Addr is me, do nothing
 
 		// 2.matchedRout
-		//ArrayList<String> matchedRoutStr = ((RoutingTable) this.getUpperLayer(0)).getMatchedRout(dstIpAddr);
-		//new _Routing_Structures(matchedRoutStr.get(0), matchedRoutStr.get(1), matchedRoutStr.get(2), matchedRoutStr.get(3), matchedRoutStr.get(4), matchedRoutStr.get(5));
+		_Routing_Structures matchedRout = getMatchedRout(dstIpAddr);
 
 		// 3.Flag
 		// portNum not determined
-    	_Routing_Structures matchedRout = getMatchedRout(dstIpAddr);
 		int portNum;
 		if(matchedRout.Flag.equals("U")) {
 			// i don't read a book
@@ -102,7 +102,6 @@ public class RoutingTable implements BaseLayer {
 		else if (matchedRout.metric.equals("2")) {
 			return ((IPLayer) this.getUpperLayer(1)).send(input, input.length, directTransferMac);
 		}
-
 		return false;
 	}
 	
