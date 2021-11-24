@@ -55,20 +55,13 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	JTextArea gatewayArea;
 	JTextArea routerTableArea;
 	JTextArea arpCacheArea;
-	JTextArea srcIpAddress;
-	JTextArea srcMacAddress;
-	JTextArea dstIpAddress;
 
-	
-	JLabel labelsrcIp;
-	JLabel labelsrcMac;
-	JLabel labeldstIp;
-	JLabel labelArpIp;
 	JLabel labelDestination;
 	JLabel labelNetmask;
 	JLabel labelGateway;
 	JLabel labelFlag;
 	JLabel labelInterface;
+	JLabel labelMetircs;
 
 	
 	JButton Router_Table_Entry_Setting_Button;
@@ -82,6 +75,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	static JComboBox<String> NICComboBox_1;
 //	static JComboBox<String> NICComboBox_2;
 	static JComboBox<String> routerInterfaceComboBox;
+	static JComboBox<String> routerMetricsComboBox;
 
 	int adapterNumber = 0;
 
@@ -111,6 +105,19 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 	// print ARP Table arp cache area
 	public void printARPTable(HashMap<String, String> ARPTable) {
+		arpCacheArea.setText("IP\t\tMAC\t\tStatus\n");
+		for (String i : ARPTable.keySet()) {
+			String status = ARPTable.get(i) == "??????" ? "\tIncomplete" : "Complete";
+
+			if(i.length() < 13)
+				arpCacheArea.append(i + "\t\t" + ARPTable.get(i) + "\t" + status + "\n");
+			else
+				arpCacheArea.append(i + "\t" + ARPTable.get(i) + "\t" + status + "\n");
+		}
+	}
+	
+	// print ARP Table arp cache area
+	public void printRouterTable(HashMap<String, String> RouterTable) {
 		arpCacheArea.setText("IP\t\tMAC\t\tStatus\n");
 		for (String i : ARPTable.keySet()) {
 			String status = ARPTable.get(i) == "??????" ? "\tIncomplete" : "Complete";
@@ -161,7 +168,12 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				}
 				
 				String interface_ = routerInterfaceComboBox.getSelectedItem().toString();
-				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
+				
+				String metrics = routerMetricsComboBox.getSelectedItem().toString();
+				
+				
+				
+				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_, metrics);
 			}
 			
 			
@@ -169,36 +181,21 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			// -----setting------------------------------------------------------------------------------------
 			// setting button
 			if (e.getSource() == Setting_Button) {
-				if (Setting_Button.getText() == "Reset") {
-					srcIpAddress.setText("");
-					srcMacAddress.setText("");
-					dstIpAddress.setText("");
-					Setting_Button.setText("Setting");
-					srcIpAddress.setEnabled(true);
-					srcMacAddress.setEnabled(true);
-					dstIpAddress.setEnabled(true);
+				byte[] srcIp = ipStoB();
+				byte[] srcMac = macStoB();
+				byte[] dstIp = ipStoB();
+				
+				if(srcIp != null && srcMac != null && dstIp != null) {
+					((IPLayer) m_LayerMgr.getLayer("IP")).setIPSrcAddress(srcIp);
+					((IPLayer) m_LayerMgr.getLayer("IP")).setIPDstAddress(dstIp);
+					((EthernetLayer) m_LayerMgr.getLayer("Ethernet")).setEnetSrcAddress(srcMac);
+
+					((NILayer) m_LayerMgr.getLayer("NI")).setAdapterNumber(adapterNumber);
+
 				} else {
-					byte[] srcIp = ipStoB(srcIpAddress.getText());
-					byte[] srcMac = macStoB(srcMacAddress.getText());
-					byte[] dstIp = ipStoB(dstIpAddress.getText());
-					
-					if(srcIp != null && srcMac != null && dstIp != null) {
-						((IPLayer) m_LayerMgr.getLayer("IP")).setIPSrcAddress(srcIp);
-						((IPLayer) m_LayerMgr.getLayer("IP")).setIPDstAddress(dstIp);
-						((EthernetLayer) m_LayerMgr.getLayer("Ethernet")).setEnetSrcAddress(srcMac);
-
-						((NILayer) m_LayerMgr.getLayer("NI")).setAdapterNumber(adapterNumber);
-
-						Setting_Button.setText("Reset");
-						srcIpAddress.setEnabled(false);
-						srcMacAddress.setEnabled(false);
-						dstIpAddress.setEnabled(false);	
-					} else {
-						JOptionPane.showMessageDialog(null, "Wrong Address Format");
-					}
+					JOptionPane.showMessageDialog(null, "Wrong Address Format");
 				}
 			}
-
 		}
 	}
 
@@ -287,7 +284,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		JPanel routerEntryPanel = new JPanel();
 		routerEntryPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Router Table Entry",
 				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		routerEntryPanel.setBounds(720, 10, 400, 400);
+		routerEntryPanel.setBounds(720, 10, 600, 600);
 		contentPane.add(routerEntryPanel);
 		routerEntryPanel.setLayout(null);
 		
@@ -359,25 +356,43 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		flagHost.setBounds(140, 0, 60, 20);
 		flagPanel.add(flagHost);
 		
-		// interface
+		// metrics
 		labelInterface = new JLabel("Interface");
 		labelInterface.setBounds(50, 250, 90, 20);
 		routerEntryPanel.add(labelInterface);
 		
+		JPanel metricsPanel = new JPanel();
+		metricsPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		metricsPanel.setBounds(140, 250, 200, 20);
+		routerEntryPanel.add(metricsPanel);
+		metricsPanel.setLayout(null);
+		
+		String[] port_num = {"1", "2"};
+		routerMetricsComboBox = new JComboBox(port_num);
+		routerMetricsComboBox.setBounds(0, 0, 200, 20);
+		metricsPanel.add(routerMetricsComboBox);
+		
+		
+		// interface
+		labelInterface = new JLabel("Interface");
+		labelInterface.setBounds(50, 300, 90, 20);
+		routerEntryPanel.add(labelInterface);
+		
 		JPanel interfacePanel = new JPanel();
 		interfacePanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		interfacePanel.setBounds(140, 250, 200, 20);
+		interfacePanel.setBounds(140, 300, 200, 20);
 		routerEntryPanel.add(interfacePanel);
 		interfacePanel.setLayout(null);
-		
-		String[] port = {"Port1", "Port2"};
-		routerInterfaceComboBox = new JComboBox(port);
+
+		String[] port_name = {"NIC1", "NIC2"};
+		routerInterfaceComboBox = new JComboBox(port_name);
 		routerInterfaceComboBox.setBounds(0, 0, 200, 20);
 		interfacePanel.add(routerInterfaceComboBox);
 		
+		
 		// setting button
 		Router_Table_Entry_Setting_Button = new JButton("Setting");// setting
-		Router_Table_Entry_Setting_Button.setBounds(100, 315, 200, 45);
+		Router_Table_Entry_Setting_Button.setBounds(100, 400, 200, 45);
 		Router_Table_Entry_Setting_Button.addActionListener(new SetAddressListener());
 		routerEntryPanel.add(Router_Table_Entry_Setting_Button);
 		
@@ -387,53 +402,11 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		JPanel settingPanel = new JPanel();
 		settingPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "setting",
 				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		settingPanel.setBounds(720, 420, 400, 400);
+		settingPanel.setBounds(720, 620, 600, 200);
 		contentPane.add(settingPanel);
 		settingPanel.setLayout(null);
 
-		labelsrcIp = new JLabel("Source IP Address");
-		labelsrcIp.setBounds(20, 120, 170, 20);
-		settingPanel.add(labelsrcIp);
-
-		JPanel sourceIpAddressPanel = new JPanel();
-		sourceIpAddressPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		sourceIpAddressPanel.setBounds(20, 150, 360, 20);
-		settingPanel.add(sourceIpAddressPanel);
-		sourceIpAddressPanel.setLayout(null);
-
-		srcIpAddress = new JTextArea();
-		srcIpAddress.setBounds(2, 2, 360, 20);
-		sourceIpAddressPanel.add(srcIpAddress);// src address
-
-		labelsrcMac = new JLabel("Source MAC Address");
-		labelsrcMac.setBounds(20, 200, 170, 20);
-		settingPanel.add(labelsrcMac);
-
-		JPanel sourceAddressPanel = new JPanel();
-		sourceAddressPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		sourceAddressPanel.setBounds(20, 230, 360, 20);
-		settingPanel.add(sourceAddressPanel);
-		sourceAddressPanel.setLayout(null);
-
-		srcMacAddress = new JTextArea();
-		srcMacAddress.setBounds(2, 2, 360, 20);
-		sourceAddressPanel.add(srcMacAddress);// src address
-
-		labeldstIp = new JLabel("Destination IP Address");
-		labeldstIp.setBounds(20, 280, 190, 20);
-		settingPanel.add(labeldstIp);
-
-		JPanel destinationAddressPanel = new JPanel();
-		destinationAddressPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		destinationAddressPanel.setBounds(20, 310, 360, 20);
-		settingPanel.add(destinationAddressPanel);
-		destinationAddressPanel.setLayout(null);
-
-		dstIpAddress = new JTextArea();
-		dstIpAddress.setBounds(2, 2, 360, 20);
-		destinationAddressPanel.add(dstIpAddress);// dst address
-
-		JLabel NICLabel = new JLabel("NIC List");
+		JLabel NICLabel = new JLabel("NIC List :");
 		NICLabel.setBounds(20, 30, 170, 20);
 		settingPanel.add(NICLabel);
 
@@ -478,7 +451,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		;
 
 		Setting_Button = new JButton("Setting");// setting
-		Setting_Button.setBounds(300, 360, 80, 20);
+		Setting_Button.setBounds(100, 140, 200, 45);
 		Setting_Button.addActionListener(new SetAddressListener());
 		settingPanel.add(Setting_Button);
 
