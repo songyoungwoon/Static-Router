@@ -73,8 +73,8 @@ public class IPLayer implements BaseLayer {
 	}
 	
 	// ----- send -----
-	public boolean send(byte[] input, int length, byte[] directTransferIp) {
-		((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, directTransferIp);
+	public boolean send(byte[] input, int length, byte[] directTransferMac) {
+		((EthernetLayer)this.getUnderLayer()).send(input, input.length, directTransferMac);
 		return true;
 	}
 	
@@ -186,15 +186,6 @@ public class IPLayer implements BaseLayer {
 
 	public byte[] getIPDstAddress() {
 		return m_sHeader.ip_dst.addr;
-	}
-
-
-	public void setPortLayer(){
-
-	}
-
-	public void getPortLayer(){
-
 	}
 
 	@Override

@@ -93,6 +93,7 @@ public class RoutingTable implements BaseLayer {
 				return routingTable.get(index);
 			index++;
 		}
+		return null;
 	}
 	
 	// ----- bit And operation -----
