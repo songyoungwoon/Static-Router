@@ -1,6 +1,23 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
+// ----- Routing Structures -----
+class _Routing_Structures {
+	String Dst_ip_addr = null;
+	String Subnet_mask = null;
+	String Gateway = null;
+	String Flag = null;
+	String Interface = null;
+	
+	public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
+        this.Dst_ip_addr = Dst_ip_addr;
+        this.Subnet_mask = Subnet_mask;
+        this.Gateway = Gateway;
+        this.Flag = Flag;
+        this.Interface = Interface;
+    }
+}
+
 public class RoutingTable implements BaseLayer {
 	// ----- Properties -----
 	private int nUnderLayerCount = 0;
@@ -15,37 +32,6 @@ public class RoutingTable implements BaseLayer {
     // ----- Constructor -----
     public RoutingTable(String pName) {
 		pLayerName = pName;
-	}
-    
-    // ----- Routing Structures -----
-    private class _Routing_Structures {
-    	String Dst_ip_addr = null;
-    	String Subnet_mask = null;
-    	String Gateway = null;
-    	String Flag = null;
-    	String Interface = null;
-    	
-		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
-            this.Dst_ip_addr = Dst_ip_addr;
-            this.Subnet_mask = Subnet_mask;
-            this.Gateway = Gateway;
-            this.Flag = Flag;
-            this.Interface = Interface;
-        }
-    }
-    
-	// ----- getPortNum -----
-	public String getPortNum(byte[] srcIpAddr) {
-		for (_Routing_Structures routingTableEntry : routingTable) {
-			// ----- dstIpAddr & rout.Subnet_mask ----- 
-			byte [] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
-		    srcIpAddr = CalDstAndSub(srcIpAddr, SubnetMask);
-			// check rout.Destination Address
-			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(srcIpAddr))) {
-				return routingTableEntry.Interface;
-			}
-		}
-		return null;
 	}
     
 	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {

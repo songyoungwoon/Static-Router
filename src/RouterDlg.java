@@ -125,18 +125,13 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	}
 	
 	// print routing table area
-//	public void printRouterTable(HashMap<String, String> RouterTable) {
-//		routerTableArea.setText("IP\t\tMAC\t\tStatus\n");
-//		for (String i : RouterTable.keySet()) {
-//			String status = RouterTable.get(i) == "??????" ? "\tIncomplete" : "Complete";
-//
-//			if(i.length() < 13)
-//				routerTableArea.append(i + "\t\t" + RouterTable.get(i) + "\t" + status + "\n");
-//			else
-//				routerTableArea.append(i + "\t" + RouterTable.get(i) + "\t" + status + "\n");
-//
-//		}
-//	}
+	public void printRouterTable(ArrayList<_Routing_Structures> RouterTable) {
+		routerTableArea.setText("Dst_ip_addr\tSubnet_mask\tGateway\tFlag\tInterface\n");
+		for (_Routing_Structures i :RouterTable) {
+				routerTableArea.append(i.Dst_ip_addr + "\t" + i.Subnet_mask + "\t" + i.Gateway + "\t" + i.Flag + "\t" + i.Interface + "\n");
+
+		}
+	}
 
 	class SetAddressListener implements ActionListener {
 		@Override

@@ -188,15 +188,6 @@ public class IPLayer implements BaseLayer {
 		return m_sHeader.ip_dst.addr;
 	}
 
-
-	public void setPortLayer(){
-
-	}
-
-	public void getPortLayer(){
-
-	}
-
 	@Override
 	public String getLayerName() {
 		return pLayerName;
