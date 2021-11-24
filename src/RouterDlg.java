@@ -85,30 +85,56 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	public static void main(String[] args) {
 		// Get all adapters
 		jnet = new JNetManager();
-		// Adding layers	
-		m_LayerMgr.addLayer(new NILayer("NI"));
-		m_LayerMgr.addLayer(new EthernetLayer("Ethernet"));
+		// Adding layers
+		NILayer ni1 = new NILayer("NI");
+		m_LayerMgr.addLayer(ni1);
+		EthernetLayer eth1 = new EthernetLayer("Ethernet");
+		m_LayerMgr.addLayer(eth1);
 		m_LayerMgr.addLayer(new ARPLayer("ARP"));
-		m_LayerMgr.addLayer(new IPLayer("IP"));
-	
-		m_LayerMgr.addLayer(new NILayer("NI2"));
-		m_LayerMgr.addLayer(new EthernetLayer("Ethernet2"));
-		m_LayerMgr.addLayer(new ARPLayer("ARP2"));		
-		m_LayerMgr.addLayer(new IPLayer("IP2"));
 		
-		m_LayerMgr.addLayer(new RoutingTable("RT"));
-		m_LayerMgr.addLayer(new RouterDlg("GUI"));
+		IPLayer ip1 = new IPLayer("IP");
+		m_LayerMgr.addLayer(ip1);
+
+		NILayer ni2 = new NILayer("NI2");
+		m_LayerMgr.addLayer(ni2);
+		EthernetLayer eth2 = new EthernetLayer("Ethernet2");
+		m_LayerMgr.addLayer(eth2);
+		m_LayerMgr.addLayer(new ARPLayer("ARP2"));
+		IPLayer ip2 = new IPLayer("IP2");
+		m_LayerMgr.addLayer(ip2);
+		
+		RoutingTable rt = new RoutingTable("RT");
+		m_LayerMgr.addLayer(rt);
+		
+		RouterDlg dlg = new RouterDlg("GUI");
+		m_LayerMgr.addLayer(dlg);
 
 
 		// Connecting Layers
-		m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *RT ( *GUI )");
-		m_LayerMgr.connectLayers("Ethernet ( *ARP ( +IP )");
-
-		m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *IP2 ( *RT ( *GUI )");
-		m_LayerMgr.connectLayers("Ethernet2 ( *ARP2 ( +IP2 )");
+//		m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *RT ( *GUI )");
+//		m_LayerMgr.connectLayers("Ethernet ( *ARP ( +IP )");
+//
+//		m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *IP2 ( *RT ( *GUI )");
+//		m_LayerMgr.connectLayers("Ethernet2 ( *ARP2 ( +IP2 )");
+		
+		m_LayerMgr.connectLayers("NI ( *Ethernet ( *ARP ( +IP ) *IP ) ) ");
+		m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *ARP2 ( +IP2 ) *IP2 ) ) ");
+		
+		rt.setUnderLayer(ip1);
+		rt.setUnderLayer(ip2);
+		dlg.setUnderLayer(rt);
+		
 
 		//m_LayerMgr.connectLayers("NI ( *Ethernet ( *ARP ( +IP ) ( *IP ( *RT (+ IP2 ) ( *GUI ) ) ) ) ) ");
 		//m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *ARP2 ( +IP2 ) ( *IP2 ( *RT ( + IP ) ( *GUI ) ) ) ) )");
+		
+		for(BaseLayer b : rt.p_aUnderLayer) {
+			System.out.println(b);
+		}
+		eth1.setEnetSrcAddress(ni1.getAdapterMAC());
+		eth2.setEnetSrcAddress(ni2.getAdapterMAC());
+		//ni1.receive();
+		//ni2.receive();
 	}
 
 	// print ARP Table arp cache area

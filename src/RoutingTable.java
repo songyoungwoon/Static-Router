@@ -24,7 +24,7 @@ public class RoutingTable implements BaseLayer {
 	private int nUpperLayerCount = 0;
     private String pLayerName = null;
     private BaseLayer p_UnderLayer = null;
-    private ArrayList<BaseLayer> p_aUnderLayer = new ArrayList<BaseLayer>();
+    public ArrayList<BaseLayer> p_aUnderLayer = new ArrayList<BaseLayer>();
     private ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	// ----- Routing Table -----
     public ArrayList<_Routing_Structures> routingTable = new ArrayList<>();
@@ -79,7 +79,7 @@ public class RoutingTable implements BaseLayer {
 		// 5.send
 		String[] temp = matchedRout.Interface.split("_");
 		int portNum = Integer.parseInt(temp[1]);
-		
+
 		return ((IPLayer)this.getUnderLayer(portNum - 1)).send(input, input.length, directTransferIp);
 		
 	}
