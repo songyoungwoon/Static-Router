@@ -37,6 +37,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	public File file = null;
 
 	public static LayerManager m_LayerMgr = new LayerManager();
+	public static JNetManager jnet;
 
 	private Logger logging = new Logger(this);
 
@@ -82,6 +83,8 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	String Text;
 
 	public static void main(String[] args) {
+		// Get all adapters
+		jnet = new JNetManager();
 		// Adding layers	
 		m_LayerMgr.addLayer(new NILayer("NI"));
 		m_LayerMgr.addLayer(new EthernetLayer("Ethernet"));
@@ -180,7 +183,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				
 //				String metrics = routerMetricsComboBox.getSelectedItem().toString();
 				
-//				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
+				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
 
 				destinationArea.setText("");
 				netmaskArea.setText("");
@@ -293,7 +296,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		JPanel routerEntryPanel = new JPanel();
 		routerEntryPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Router Table Entry",
 				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		routerEntryPanel.setBounds(720, 10, 400, 400);
+		routerEntryPanel.setBounds(720, 10, 400, 600);
 		contentPane.add(routerEntryPanel);
 		routerEntryPanel.setLayout(null);
 		
@@ -400,7 +403,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 		// Add button
 		Router_Table_Entry_Setting_Button = new JButton("Add");// Add
-		Router_Table_Entry_Setting_Button.setBounds(100, 320, 200, 45);
+		Router_Table_Entry_Setting_Button.setBounds(100, 520, 200, 45);
 		Router_Table_Entry_Setting_Button.addActionListener(new SetAddressListener());
 		routerEntryPanel.add(Router_Table_Entry_Setting_Button);
 		
