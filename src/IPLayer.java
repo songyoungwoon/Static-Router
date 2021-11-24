@@ -93,7 +93,7 @@ public class IPLayer implements BaseLayer {
 	
 	// ----- send -----
 	public boolean send(byte[] input, int length, byte[] directTransferMac) {
-		((EthernetLayer)this.getUnderLayer()).RouterSend(input, input.length, directTransferMac);
+		((EthernetLayer)this.getUnderLayer()).send(input, input.length, directTransferMac);
 		return true;
 	}
 	

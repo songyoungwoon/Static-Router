@@ -57,7 +57,7 @@ public class EthernetLayer implements BaseLayer {
 	// ----- RouterSend -----
 	// ----- TODO : send Routing data -----
 	// check portNum, attach header (DST, SRC MacAddr)
-	public boolean RouterSend(byte[] input, int length, byte[] directTransferMac) {
+	public boolean send(byte[] input, int length, byte[] directTransferMac) {
 		setEnetDstAddress(directTransferMac);
 		m_sHeader.enet_type = intToByte2(DATA_TYPE);
 		logging.log("Send data");
@@ -72,18 +72,6 @@ public class EthernetLayer implements BaseLayer {
 		logging.log("Send ARP");
 		byte[] bytes = objToByte(m_sHeader, input, length, false);
 		return ((NILayer)this.getUnderLayer()).send(bytes, length + HEADER_SIZE);
-	}
-
-	// ----- delete maybe -----
-	public boolean sendData(byte[] input, int length) {
-		byte[] srcIP = ((IPLayer) this.getUpperLayer(1)).getIPSrcAddress();
-		byte[] dstIP = ((IPLayer) this.getUpperLayer(1)).getIPDstAddress();
-	//	byte[] dstMac = ((ARPLayer) this.getUpperLayer(0)).getDstMac(srcIP, dstIP);
-	//	setEnetDstAddress(dstMac);
-		m_sHeader.enet_type = intToByte2(DATA_TYPE);
-		logging.log("Send data");
-		byte[] bytes = objToByte(m_sHeader, input, length, false);
-		return this.getUnderLayer().send(bytes, length + HEADER_SIZE);
 	}
 
 	// Receiving
