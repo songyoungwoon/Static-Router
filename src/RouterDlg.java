@@ -142,7 +142,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			//-----router cache--------------------------------------------------------------------------------------
 			// router all delete button
 			if (e.getSource() == Router_Delete_Button) {
-				((RoutingTable) m_LayerMgr.getLayer("RT")).deleteRoutingTableEntry(0);
+				((RoutingTable) m_LayerMgr.getLayer("RT")).deleteRoutingTableEntry();
 				routerTableWrite.setText("");
 			}
 			
