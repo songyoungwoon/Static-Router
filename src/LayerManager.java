@@ -131,10 +131,6 @@ public class LayerManager {
 		}
 	}
 
-	public void setPortLayer(String pcList){
-
-
-	}
 	
 	
 }

@@ -12,7 +12,6 @@ public class IPLayer implements BaseLayer {
     private String pLayerName = null;
     private BaseLayer p_UnderLayer = null;
     private ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
-    private ArrayList<BaseLayer> p_PortLayer = new ArrayList<>();
     private _IP m_sHeader;
 
 	private byte[] packetAccumulator;

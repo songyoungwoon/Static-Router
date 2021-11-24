@@ -97,10 +97,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		m_LayerMgr.addLayer(new RouterDlg("GUI"));
 
 
-		// setPortLayer
-		m_LayerMgr.setPortLayer("IP ( IP IP2 )");
-		m_LayerMgr.setPortLayer("IP2 ( IP IP2 )");
-
 		// Connecting Layers
 		m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *RT ( *GUI )");
 		m_LayerMgr.connectLayers("Ethernet ( *ARP ( +IP )");
