@@ -70,7 +70,6 @@ public class RoutingTable implements BaseLayer {
 		byte[] srcIpAddr = null; //empty for now
 		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
 		byte[] directTransferIp = null;
-		byte[] directTransferMac = null;
 
 		// *.if dstIP_Addr is me, do nothing
 
@@ -92,7 +91,8 @@ public class RoutingTable implements BaseLayer {
 		// 5.send
 		String[] temp = matchedRout.Interface.split("_");
 		int portNum = Integer.parseInt(temp[1]);
-		return ((IPLayer)this.getUnderLayer(portNum - 1)).send(input, input.length);
+		
+		return ((IPLayer)this.getUnderLayer(portNum - 1)).send(input, input.length, directTransferIp);
 		
 	}
 	
