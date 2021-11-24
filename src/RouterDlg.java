@@ -407,17 +407,10 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		routerInterfaceComboBox = new JComboBox(port_name);
 		routerInterfaceComboBox.setBounds(0, 0, 200, 20);
 		interfacePanel.add(routerInterfaceComboBox);
-		
-<<<<<<< HEAD
-		
-		// setting button
-		Router_Table_Entry_Setting_Button = new JButton("Setting");// setting
-		Router_Table_Entry_Setting_Button.setBounds(100, 400, 200, 45);
-=======
+
 		// Add button
 		Router_Table_Entry_Setting_Button = new JButton("Add");// Add
 		Router_Table_Entry_Setting_Button.setBounds(100, 315, 200, 45);
->>>>>>> 0593f58719399f5a1782d712855e63b07094f853
 		Router_Table_Entry_Setting_Button.addActionListener(new SetAddressListener());
 		routerEntryPanel.add(Router_Table_Entry_Setting_Button);
 		
