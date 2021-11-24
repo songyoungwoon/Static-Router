@@ -23,7 +23,7 @@ public class JNetManager {
 	}
 
     // ----- Constructor -----
-    public JnetManager() {
+    public JNetManager() {
         // Find all possible adapters
 	    StringBuilder errbuf = new StringBuilder();
         ArrayList<PcapIf> allDevs = new ArrayList<PcapIf>();
@@ -35,7 +35,7 @@ public class JNetManager {
         // Filter IPv4 adaters from all adapters
 		this.m_pAdapterList = new ArrayList<PcapIf>();
         for(int i = 0; i < allDevs.size(); i++) {
-            if(allDevs.get(i).getAddresses()getAddr().get(0).getFamily() == 2) {
+            if(allDevs.get(i).getAddresses().get(0).getAddr().getFamily() == 2) {
                 this.m_pAdapterList.add(allDevs.get(i));
             }
         }
@@ -45,7 +45,7 @@ public class JNetManager {
 			System.exit(0);
         }
 
-        System.out.println("[JNetPcap] " + this.m_pAdapterList.size() + "Adapters found");
+        System.out.println("[JNetPcap] " + this.m_pAdapterList.size() + " Adapters found");
         this.nextPcapIf = 0;
     }
 

@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import org.jnetpcap.Pcap;
@@ -27,7 +28,7 @@ public class NILayer implements BaseLayer {
         if(this.m_pAdapter == null) {
             logging.panic("No more available adapters", null);
         }
-        logging.log(this.m_pAdapter.getName() + "installed");
+        logging.log(this.m_pAdapter.getName() + " installed");
 
 		int snaplen = 64 * 1024; // Capture all packets, no trucation
 		int flags = Pcap.MODE_PROMISCUOUS; // capture all packets
@@ -52,6 +53,19 @@ public class NILayer implements BaseLayer {
 		obj.start();
 		logging.log("Receive thread(" + m_pAdapter.getName() + ") start");
         return true;
+	}
+	
+	public byte[] getAdapterIP() {
+		return this.m_pAdapter.getAddresses().get(0).getAddr().getData();
+	}
+	
+	public byte[] getAdapterMAC() {
+		try {
+			return this.m_pAdapter.getHardwareAddress();
+		} catch(IOException err) {
+			err.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
