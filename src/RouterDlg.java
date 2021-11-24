@@ -121,6 +121,19 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				arpCacheArea.append(i + "\t" + ARPTable.get(i) + "\t" + status + "\n");
 		}
 	}
+	
+	// print routing table area
+	public void printRouterTable(HashMap<String, String> RouterTable) {
+		routerTableArea.setText("IP\t\tMAC\t\tStatus\n");
+		for (String i : RouterTable.keySet()) {
+			String status = RouterTable.get(i) == "??????" ? "\tIncomplete" : "Complete";
+
+			if(i.length() < 13)
+				routerTableArea.append(i + "\t\t" + RouterTable.get(i) + "\t" + status + "\n");
+			else
+				routerTableArea.append(i + "\t" + RouterTable.get(i) + "\t" + status + "\n");
+		}
+	}
 
 	class SetAddressListener implements ActionListener {
 		@Override
@@ -143,7 +156,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			
 			
 			// -----router table entry
-			//
+			// setting button
 			if(e.getSource() == Router_Table_Entry_Setting_Button) {
 				String destination = destinationArea.getText();
 				String netmask = netmaskArea.getText();
@@ -152,15 +165,25 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				String flag = "";
 				if(flagUp.isSelected()) {
 					flag = "U";
+					flagUp.setSelected(false);
 				}
 				if(flagGateway.isSelected()){
 					flag += "G";
+					flagGateway.setSelected(false);
 				}
 				if(flagHost.isSelected()) {
 					flag += "H";
+					flagHost.setSelected(false);
 				}
 				
 				String interface_ = routerInterfaceComboBox.getSelectedItem().toString();
+				
+				destinationArea.setText("");
+				netmaskArea.setText("");
+				gatewayArea.setText("");
+				routerInterfaceComboBox.setSelectedIndex(0);
+				
+				
 				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
 			}
 			
@@ -375,8 +398,8 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		routerInterfaceComboBox.setBounds(0, 0, 200, 20);
 		interfacePanel.add(routerInterfaceComboBox);
 		
-		// setting button
-		Router_Table_Entry_Setting_Button = new JButton("Setting");// setting
+		// Add button
+		Router_Table_Entry_Setting_Button = new JButton("Add");// Add
 		Router_Table_Entry_Setting_Button.setBounds(100, 315, 200, 45);
 		Router_Table_Entry_Setting_Button.addActionListener(new SetAddressListener());
 		routerEntryPanel.add(Router_Table_Entry_Setting_Button);
