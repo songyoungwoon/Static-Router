@@ -100,11 +100,9 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		// Connecting Layers
 		m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *RT ( *GUI )");
 		m_LayerMgr.connectLayers("Ethernet ( *ARP ( +IP )");
-		m_LayerMgr.connectLayers("IP ( +IP2 )");
 
 		m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *IP2 ( *RT ( *GUI )");
 		m_LayerMgr.connectLayers("Ethernet2 ( *ARP2 ( +IP2 )");
-		m_LayerMgr.connectLayers("IP2 ( +IP )");
 
 		//m_LayerMgr.connectLayers("NI ( *Ethernet ( *ARP ( +IP ) ( *IP ( *RT (+ IP2 ) ( *GUI ) ) ) ) ) ");
 		//m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *ARP2 ( +IP2 ) ( *IP2 ( *RT ( + IP ) ( *GUI ) ) ) ) )");
