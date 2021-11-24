@@ -12,6 +12,7 @@ public class IPLayer implements BaseLayer {
     private String pLayerName = null;
     private BaseLayer p_UnderLayer = null;
     private ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
+    private ArrayList<BaseLayer> p_PortLayer = new ArrayList<>();
     private _IP m_sHeader;
 
 	private byte[] packetAccumulator;
@@ -126,10 +127,10 @@ public class IPLayer implements BaseLayer {
 		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp);
 		
 		// 5.send
-		if (matchedRout.metric.equals("")) {
+		if (matchedRout.metric.equals("1")) {
 			return this.send(input, input.length, directTransferMac);
 		}
-		else if (matchedRout.metric.equals("")) {
+		else if (matchedRout.metric.equals("2")) {
 			return ((IPLayer) this.getUpperLayer(1)).send(input, input.length, directTransferMac);
 		}
 		
@@ -252,6 +253,14 @@ public class IPLayer implements BaseLayer {
 		return m_sHeader.ip_dst.addr;
 	}
 
+
+	public void setPortLayer(){
+
+	}
+
+	public void getPortLayer(){
+
+	}
 
 	@Override
 	public String getLayerName() {
