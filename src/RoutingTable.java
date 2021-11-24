@@ -2,9 +2,11 @@ import java.util.ArrayList;
 
 public class RoutingTable implements BaseLayer {
 	// ----- Properties -----
+	private int nUnderLayerCount = 0;
 	private int nUpperLayerCount = 0;
     private String pLayerName = null;
     private BaseLayer p_UnderLayer = null;
+    private ArrayList<BaseLayer> p_aUnderLayer = new ArrayList<BaseLayer>();
     private ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	// ----- Routing Table -----
     public ArrayList<_Routing_Structures> routingTable = new ArrayList<>();
@@ -107,6 +109,13 @@ public class RoutingTable implements BaseLayer {
 			return null;
 		return p_UnderLayer;
 	}
+	
+	// ----- getUnderLayer for Port -----
+	public BaseLayer getUnderLayer(int nindex) {
+		if (nindex < 0 || nindex > nUnderLayerCount || nUnderLayerCount < 0)
+			return null;
+		return p_aUpperLayer.get(nindex);
+	}
 
 	@Override
 	public BaseLayer getUpperLayer(int nindex) {
@@ -119,7 +128,7 @@ public class RoutingTable implements BaseLayer {
 	public void setUnderLayer(BaseLayer pUnderLayer) {
 		if (pUnderLayer == null)
 			return;
-		this.p_UnderLayer = pUnderLayer;
+		this.p_aUnderLayer.add(nUnderLayerCount++, pUnderLayer);
 	}
 
 	@Override
