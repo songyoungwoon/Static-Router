@@ -195,22 +195,22 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			
 			// -----setting------------------------------------------------------------------------------------
 			// setting button
-			if (e.getSource() == Setting_Button) {
-				byte[] srcIp = ipStoB();
-				byte[] srcMac = macStoB();
-				byte[] dstIp = ipStoB();
-				
-				if(srcIp != null && srcMac != null && dstIp != null) {
-					((IPLayer) m_LayerMgr.getLayer("IP")).setIPSrcAddress(srcIp);
-					((IPLayer) m_LayerMgr.getLayer("IP")).setIPDstAddress(dstIp);
-					((EthernetLayer) m_LayerMgr.getLayer("Ethernet")).setEnetSrcAddress(srcMac);
-
-					((NILayer) m_LayerMgr.getLayer("NI")).setAdapterNumber(adapterNumber);
-
-				} else {
-					JOptionPane.showMessageDialog(null, "Wrong Address Format");
-				}
-			}
+//			if (e.getSource() == Setting_Button) {
+//				byte[] srcIp = ipStoB();
+//				byte[] srcMac = macStoB();
+//				byte[] dstIp = ipStoB();
+//				
+//				if(srcIp != null && srcMac != null && dstIp != null) {
+//					((IPLayer) m_LayerMgr.getLayer("IP")).setIPSrcAddress(srcIp);
+//					((IPLayer) m_LayerMgr.getLayer("IP")).setIPDstAddress(dstIp);
+//					((EthernetLayer) m_LayerMgr.getLayer("Ethernet")).setEnetSrcAddress(srcMac);
+//
+//					((NILayer) m_LayerMgr.getLayer("NI")).setAdapterNumber(adapterNumber);
+//
+//				} else {
+//					JOptionPane.showMessageDialog(null, "Wrong Address Format");
+//				}
+//			}
 		}
 	}
 
@@ -412,64 +412,64 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		
 		
 		// -----setting---------------------------------------------------------------------------------
-		// setting address panel
-		JPanel settingPanel = new JPanel();
-		settingPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "setting",
-				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		settingPanel.setBounds(720, 620, 600, 200);
-		contentPane.add(settingPanel);
-		settingPanel.setLayout(null);
-
-		JLabel NICLabel = new JLabel("NIC List :");
-		NICLabel.setBounds(20, 30, 170, 20);
-		settingPanel.add(NICLabel);
-
-		NICComboBox_1 = new JComboBox();
-		NICComboBox_1.setBounds(20, 70, 360, 20);
-		settingPanel.add(NICComboBox_1);
-
-		NILayer tempNiLayer = (NILayer) m_LayerMgr.getLayer("NI");
-
-		for (int i = 0; i < tempNiLayer.getAdapterList().size(); i++) {
-			// NICComboBox.addItem(((NILayer)
-			// m_LayerMgr.getLayer("NI")).getAdapterObject(i).getDescription());
-			PcapIf pcapIf = tempNiLayer.getAdapterObject(i); //
-			NICComboBox_1.addItem(pcapIf.getName());
-		}
-
-		NICComboBox_1.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// adapterNumber = NICComboBox.getSelectedIndex();
-				JComboBox jcombo = (JComboBox) e.getSource();
-				adapterNumber = jcombo.getSelectedIndex();
-				try {
-					srcMacAddress.setText("");
-					String macAddr = macBtoS(((NILayer) m_LayerMgr.getLayer("NI")).getAdapterObject(adapterNumber).getHardwareAddress());
-					logging.log("Adapter selected: " + adapterNumber + ", Present MAC Addr: " + macAddr);
-					srcMacAddress.append(macAddr);
-
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-
-		try {
-			srcMacAddress.append(macBtoS(
-					((NILayer) m_LayerMgr.getLayer("NI")).getAdapterObject(adapterNumber).getHardwareAddress()));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		;
-
-		Setting_Button = new JButton("Setting");// setting
-		Setting_Button.setBounds(100, 140, 200, 45);
-		Setting_Button.addActionListener(new SetAddressListener());
-		settingPanel.add(Setting_Button);
-
-		setVisible(true);
+//		// setting address panel
+//		JPanel settingPanel = new JPanel();
+//		settingPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "setting",
+//				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+//		settingPanel.setBounds(720, 620, 600, 200);
+//		contentPane.add(settingPanel);
+//		settingPanel.setLayout(null);
+//
+//		JLabel NICLabel = new JLabel("NIC List :");
+//		NICLabel.setBounds(20, 30, 170, 20);
+//		settingPanel.add(NICLabel);
+//
+//		NICComboBox_1 = new JComboBox();
+//		NICComboBox_1.setBounds(20, 70, 360, 20);
+//		settingPanel.add(NICComboBox_1);
+//
+//		NILayer tempNiLayer = (NILayer) m_LayerMgr.getLayer("NI");
+//
+//		for (int i = 0; i < tempNiLayer.getAdapterList().size(); i++) {
+//			// NICComboBox.addItem(((NILayer)
+//			// m_LayerMgr.getLayer("NI")).getAdapterObject(i).getDescription());
+//			PcapIf pcapIf = tempNiLayer.getAdapterObject(i); //
+//			NICComboBox_1.addItem(pcapIf.getName());
+//		}
+//
+//		NICComboBox_1.addActionListener(new ActionListener() {
+//
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				// adapterNumber = NICComboBox.getSelectedIndex();
+//				JComboBox jcombo = (JComboBox) e.getSource();
+//				adapterNumber = jcombo.getSelectedIndex();
+//				try {
+//					srcMacAddress.setText("");
+//					String macAddr = macBtoS(((NILayer) m_LayerMgr.getLayer("NI")).getAdapterObject(adapterNumber).getHardwareAddress());
+//					logging.log("Adapter selected: " + adapterNumber + ", Present MAC Addr: " + macAddr);
+//					srcMacAddress.append(macAddr);
+//
+//				} catch (IOException e1) {
+//					e1.printStackTrace();
+//				}
+//			}
+//		});
+//
+//		try {
+//			srcMacAddress.append(macBtoS(
+//					((NILayer) m_LayerMgr.getLayer("NI")).getAdapterObject(adapterNumber).getHardwareAddress()));
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
+//		;
+//
+//		Setting_Button = new JButton("Setting");// setting
+//		Setting_Button.setBounds(100, 140, 200, 45);
+//		Setting_Button.addActionListener(new SetAddressListener());
+//		settingPanel.add(Setting_Button);
+//
+//		setVisible(true);
 
 	}
 
