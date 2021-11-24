@@ -33,13 +33,15 @@ public class IPLayer implements BaseLayer {
     	String Gateway = null;
     	String Flag = null;
     	String Interface = null;
+    	String metric;
 
-		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
+		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface, String metric) {
             this.Dst_ip_addr = Dst_ip_addr;
             this.Subnet_mask = Subnet_mask;
             this.Gateway = Gateway;
             this.Flag = Flag;
             this.Interface = Interface;
+            this.metric = metric;
         }
     }
     
@@ -86,11 +88,6 @@ public class IPLayer implements BaseLayer {
 	
 	// ----- Rout function -----
 	public boolean receive(byte[] input) {
-		_IP received = byteToObj(input, input.length);
-		if(srcIsMe(received.ip_src)) {
-			logging.log("Packet rejected: Sent by this host");
-			return false;
-		}
 		/*
 		 input 패킷 뜯어서 목적지 ip 체크 -> ping packet 구조 알아야됨
 		 routing table 확인
@@ -106,9 +103,11 @@ public class IPLayer implements BaseLayer {
 		byte[] directTransferIp = null;
 		byte[] directTransferMac = null;
 		
+		// *.if dstIP_Addr is me, do nothing
+		
 		// 2.matchedRout
 		ArrayList<String> matchedRoutStr = ((RoutingTable) this.getUpperLayer(0)).getMatchedRout(dstIpAddr);
-		_Routing_Structures matchedRout = new _Routing_Structures(matchedRoutStr.get(0), matchedRoutStr.get(1), matchedRoutStr.get(2), matchedRoutStr.get(3), matchedRoutStr.get(4));
+		_Routing_Structures matchedRout = new _Routing_Structures(matchedRoutStr.get(0), matchedRoutStr.get(1), matchedRoutStr.get(2), matchedRoutStr.get(3), matchedRoutStr.get(4), matchedRoutStr.get(5));
 
 		// 3.Flag
 		// portNum not determined
@@ -123,15 +122,14 @@ public class IPLayer implements BaseLayer {
 			directTransferIp = dstIpAddr;
 		}
 		
-		//byte[] srcIpAddr = null; // ** not complete **
+		// 4.ARP check : byte[] srcIpAddr = null; // ** not complete **
 		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp);
 		
-		
 		// 5.send
-		if (matchedRout.Interface.equals("")) {
+		if (matchedRout.metric.equals("")) {
 			return this.send(input, input.length, directTransferMac);
 		}
-		else if (matchedRout.Interface.equals("")) {
+		else if (matchedRout.metric.equals("")) {
 			return ((IPLayer) this.getUpperLayer(1)).send(input, input.length, directTransferMac);
 		}
 		

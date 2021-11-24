@@ -7,7 +7,7 @@ public class RoutingTable implements BaseLayer {
     private BaseLayer p_UnderLayer = null;
     private ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	// ----- Routing Table -----
-    public ArrayList<_Routing_Structures> RoutingTable = new ArrayList<>();
+    public ArrayList<_Routing_Structures> routingTable = new ArrayList<>();
     
     // ----- Constructor -----
     public RoutingTable(String pName) {
@@ -21,19 +21,21 @@ public class RoutingTable implements BaseLayer {
     	String Gateway = null;
     	String Flag = null;
     	String Interface = null;
-
-		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
+    	String metric;
+    	
+		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface, String metric) {
             this.Dst_ip_addr = Dst_ip_addr;
             this.Subnet_mask = Subnet_mask;
             this.Gateway = Gateway;
             this.Flag = Flag;
             this.Interface = Interface;
+            this.metric = metric;
         }
     }
     
 	// ----- getPortNum -----
 	public String getPortNum(byte[] srcIpAddr) {
-		for (_Routing_Structures routingTableEntry : RoutingTable) {
+		for (_Routing_Structures routingTableEntry : routingTable) {
 			// ----- dstIpAddr & rout.Subnet_mask ----- 
 			byte [] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
 		    srcIpAddr = CalDstAndSub(srcIpAddr, SubnetMask);
@@ -45,18 +47,18 @@ public class RoutingTable implements BaseLayer {
 		return null;
 	}
     
-	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
-        return RoutingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface));
+	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface, String metric) {
+        return routingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface, metric));
     }
 
 	public void deleteRoutingTableEntry(int index) {
-        RoutingTable.remove(index);
+        routingTable.remove(index);
     }
 	
 	public ArrayList<String> getMatchedRout(byte[] dstIpAddr) {
 		int routingTableIndex = 0;
 		byte[] temp = dstIpAddr.clone();
-		for (_Routing_Structures routingTableEntry : RoutingTable) {
+		for (_Routing_Structures routingTableEntry : routingTable) {
 			// ----- dstIpAddr & rout.Subnet_mask ----- 
 			byte[] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
 		    dstIpAddr = CalDstAndSub(dstIpAddr, SubnetMask);
@@ -70,11 +72,12 @@ public class RoutingTable implements BaseLayer {
 			}
 		}
 		ArrayList<String> matchedRoutStr = new ArrayList<>();
-		matchedRoutStr.add(RoutingTable.get(routingTableIndex).Dst_ip_addr);
-		matchedRoutStr.add(RoutingTable.get(routingTableIndex).Subnet_mask);
-		matchedRoutStr.add(RoutingTable.get(routingTableIndex).Gateway);
-		matchedRoutStr.add(RoutingTable.get(routingTableIndex).Flag);
-		matchedRoutStr.add(RoutingTable.get(routingTableIndex).Interface);
+		matchedRoutStr.add(routingTable.get(routingTableIndex).Dst_ip_addr);
+		matchedRoutStr.add(routingTable.get(routingTableIndex).Subnet_mask);
+		matchedRoutStr.add(routingTable.get(routingTableIndex).Gateway);
+		matchedRoutStr.add(routingTable.get(routingTableIndex).Flag);
+		matchedRoutStr.add(routingTable.get(routingTableIndex).Interface);
+		matchedRoutStr.add(routingTable.get(routingTableIndex).metric);
 		
 		return matchedRoutStr;
 	}
