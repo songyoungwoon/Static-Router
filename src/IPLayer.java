@@ -33,7 +33,7 @@ public class IPLayer implements BaseLayer {
     	String Gateway = null;
     	String Flag = null;
     	String Interface = null;
-    	String metric;
+    	String metric = null;
 
 		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface, String metric) {
             this.Dst_ip_addr = Dst_ip_addr;
