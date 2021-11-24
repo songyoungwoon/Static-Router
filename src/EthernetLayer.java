@@ -22,9 +22,6 @@ public class EthernetLayer implements BaseLayer {
 		pLayerName = pName;
 		m_sHeader = new _ETHERNET_Frame();
 		logging = new Logger(this);
-
-		// Set MAC Address
-		this.setEnetSrcAddress(((NILayer)this.getUnderLayer()).getAdapterMAC());
 	}
 
 	// ----- Structure -----
@@ -61,6 +58,7 @@ public class EthernetLayer implements BaseLayer {
 	// ----- TODO : send Routing data -----
 	// check portNum, attach header (DST, SRC MacAddr)
 	public boolean send(byte[] input, int length, byte[] dstIP) {
+		setEnetSrcAddress(((NILayer)this.getUnderLayer()).getAdapterMAC());
 		setEnetDstAddress(((ARPLayer) this.getUpperLayer(0)).getDstMac(dstIP));
 		m_sHeader.enet_type = intToByte2(DATA_TYPE);
 		logging.log("Send data");
@@ -70,6 +68,7 @@ public class EthernetLayer implements BaseLayer {
 	
 	// Sending
 	public boolean sendARP(byte[] input, int length) {
+		setEnetSrcAddress(((NILayer)this.getUnderLayer()).getAdapterMAC());
 		setEnetDstAddress(BROADCAST);
 		m_sHeader.enet_type = intToByte2(ARP_TYPE);
 		logging.log("Send ARP");
