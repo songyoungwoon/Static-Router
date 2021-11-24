@@ -55,31 +55,17 @@ public class RoutingTable implements BaseLayer {
         routingTable.remove(index);
     }
 	
-	public ArrayList<String> getMatchedRout(byte[] dstIpAddr) {
-		int routingTableIndex = 0;
-		byte[] temp = dstIpAddr.clone();
+	public _Routing_Structures getMatchedRout(byte[] dstIpAddr) {
+		int index = 0;
 		for (_Routing_Structures routingTableEntry : routingTable) {
 			// ----- dstIpAddr & rout.Subnet_mask ----- 
 			byte[] SubnetMask = StringToByte(routingTableEntry.Subnet_mask);
-		    dstIpAddr = CalDstAndSub(dstIpAddr, SubnetMask);
+			byte[] temp = CalDstAndSub(dstIpAddr, SubnetMask);
 			// check rout.Destination Address
-			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(dstIpAddr))) {
-				break;
-			}
-			else {
-				dstIpAddr = temp.clone();
-				routingTableIndex++;
-			}
+			if (routingTableEntry.Dst_ip_addr.equals(ByteToString(temp)))
+				return routingTable.get(index);
+			index++;
 		}
-		ArrayList<String> matchedRoutStr = new ArrayList<>();
-		matchedRoutStr.add(routingTable.get(routingTableIndex).Dst_ip_addr);
-		matchedRoutStr.add(routingTable.get(routingTableIndex).Subnet_mask);
-		matchedRoutStr.add(routingTable.get(routingTableIndex).Gateway);
-		matchedRoutStr.add(routingTable.get(routingTableIndex).Flag);
-		matchedRoutStr.add(routingTable.get(routingTableIndex).Interface);
-		matchedRoutStr.add(routingTable.get(routingTableIndex).metric);
-		
-		return matchedRoutStr;
 	}
 	
 	// ----- bit And operation -----

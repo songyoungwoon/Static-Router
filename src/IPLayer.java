@@ -99,7 +99,7 @@ public class IPLayer implements BaseLayer {
 		 */
 		
 		// 1.address
-		byte[] srcIpAddr = null;
+		byte[] srcIpAddr = null; //empty for now
 		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
 		byte[] directTransferIp = null;
 		byte[] directTransferMac = null;
@@ -107,8 +107,9 @@ public class IPLayer implements BaseLayer {
 		// *.if dstIP_Addr is me, do nothing
 		
 		// 2.matchedRout
-		ArrayList<String> matchedRoutStr = ((RoutingTable) this.getUpperLayer(0)).getMatchedRout(dstIpAddr);
-		_Routing_Structures matchedRout = new _Routing_Structures(matchedRoutStr.get(0), matchedRoutStr.get(1), matchedRoutStr.get(2), matchedRoutStr.get(3), matchedRoutStr.get(4), matchedRoutStr.get(5));
+		//ArrayList<String> matchedRoutStr = ((RoutingTable) this.getUpperLayer(0)).getMatchedRout(dstIpAddr);
+		//new _Routing_Structures(matchedRoutStr.get(0), matchedRoutStr.get(1), matchedRoutStr.get(2), matchedRoutStr.get(3), matchedRoutStr.get(4), matchedRoutStr.get(5));
+		_Routing_Structures matchedRout = ((RoutingTable) this.getUpperLayer(0)).getMatchedRout(dstIpAddr);
 
 		// 3.Flag
 		// portNum not determined
