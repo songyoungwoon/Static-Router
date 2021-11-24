@@ -91,12 +91,12 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		// Adding layers	
 		m_LayerMgr.addLayer(new NILayer("NI"));
 		m_LayerMgr.addLayer(new EthernetLayer("Ethernet"));
-		m_LayerMgr.addLayer(new IPLayer("IP"));
-		
 		m_LayerMgr.addLayer(new ARPLayer("ARP"));
-		
+		m_LayerMgr.addLayer(new IPLayer("IP"));
+	
 		m_LayerMgr.addLayer(new NILayer("NI2"));
 		m_LayerMgr.addLayer(new EthernetLayer("Ethernet2"));
+		m_LayerMgr.addLayer(new ARPLayer("ARP2"));		
 		m_LayerMgr.addLayer(new IPLayer("IP2"));
 		
 		m_LayerMgr.addLayer(new RoutingTable("RT"));
