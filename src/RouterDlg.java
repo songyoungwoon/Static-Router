@@ -116,16 +116,17 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		}
 	}
 	
-	// print ARP Table arp cache area
+	// print routing table area
 	public void printRouterTable(HashMap<String, String> RouterTable) {
-		arpCacheArea.setText("IP\t\tMAC\t\tStatus\n");
-		for (String i : ARPTable.keySet()) {
-			String status = ARPTable.get(i) == "??????" ? "\tIncomplete" : "Complete";
+		routerTableArea.setText("IP\t\tMAC\t\tStatus\n");
+		for (String i : RouterTable.keySet()) {
+			String status = RouterTable.get(i) == "??????" ? "\tIncomplete" : "Complete";
 
 			if(i.length() < 13)
-				arpCacheArea.append(i + "\t\t" + ARPTable.get(i) + "\t" + status + "\n");
+				routerTableArea.append(i + "\t\t" + RouterTable.get(i) + "\t" + status + "\n");
 			else
-				arpCacheArea.append(i + "\t" + ARPTable.get(i) + "\t" + status + "\n");
+				routerTableArea.append(i + "\t" + RouterTable.get(i) + "\t" + status + "\n");
+
 		}
 	}
 
@@ -150,7 +151,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			
 			
 			// -----router table entry
-			//
+			// setting button
 			if(e.getSource() == Router_Table_Entry_Setting_Button) {
 				String destination = destinationArea.getText();
 				String netmask = netmaskArea.getText();
@@ -159,21 +160,28 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				String flag = "";
 				if(flagUp.isSelected()) {
 					flag = "U";
+					flagUp.setSelected(false);
 				}
 				if(flagGateway.isSelected()){
 					flag += "G";
+					flagGateway.setSelected(false);
 				}
 				if(flagHost.isSelected()) {
 					flag += "H";
+					flagHost.setSelected(false);
 				}
 				
 				String interface_ = routerInterfaceComboBox.getSelectedItem().toString();
 				
 				String metrics = routerMetricsComboBox.getSelectedItem().toString();
 				
-				
-				
 				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_, metrics);
+				
+				destinationArea.setText("");
+				netmaskArea.setText("");
+				gatewayArea.setText("");
+				routerInterfaceComboBox.setSelectedIndex(0);
+				
 			}
 			
 			
@@ -389,10 +397,16 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		routerInterfaceComboBox.setBounds(0, 0, 200, 20);
 		interfacePanel.add(routerInterfaceComboBox);
 		
+<<<<<<< HEAD
 		
 		// setting button
 		Router_Table_Entry_Setting_Button = new JButton("Setting");// setting
 		Router_Table_Entry_Setting_Button.setBounds(100, 400, 200, 45);
+=======
+		// Add button
+		Router_Table_Entry_Setting_Button = new JButton("Add");// Add
+		Router_Table_Entry_Setting_Button.setBounds(100, 315, 200, 45);
+>>>>>>> 0593f58719399f5a1782d712855e63b07094f853
 		Router_Table_Entry_Setting_Button.addActionListener(new SetAddressListener());
 		routerEntryPanel.add(Router_Table_Entry_Setting_Button);
 		
