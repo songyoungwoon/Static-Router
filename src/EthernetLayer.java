@@ -22,6 +22,9 @@ public class EthernetLayer implements BaseLayer {
 		pLayerName = pName;
 		m_sHeader = new _ETHERNET_Frame();
 		logging = new Logger(this);
+
+		// Set MAC Address
+		this.setEnetSrcAddress(((NILayer)this.getUnderLayer()).getAdapterMAC());
 	}
 
 	// ----- Structure -----
