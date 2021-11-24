@@ -24,15 +24,13 @@ public class RoutingTable implements BaseLayer {
     	String Gateway = null;
     	String Flag = null;
     	String Interface = null;
-    	String metric = null;
     	
-		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface, String metric) {
+		public _Routing_Structures(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
             this.Dst_ip_addr = Dst_ip_addr;
             this.Subnet_mask = Subnet_mask;
             this.Gateway = Gateway;
             this.Flag = Flag;
             this.Interface = Interface;
-            this.metric = metric;
         }
     }
     
@@ -50,8 +48,8 @@ public class RoutingTable implements BaseLayer {
 		return null;
 	}
     
-	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface, String metric) {
-        return routingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface, metric));
+	public boolean addRoutingTableEntry(String Dst_ip_addr, String Subnet_mask, String Gateway, String Flag, String Interface) {
+        return routingTable.add(new _Routing_Structures(Dst_ip_addr, Subnet_mask, Gateway, Flag, Interface));
     }
 
 	public void deleteRoutingTableEntry(int index) {
@@ -81,7 +79,6 @@ public class RoutingTable implements BaseLayer {
 
 		// 3.Flag
 		// portNum not determined
-		int portNum;
 		if(matchedRout.Flag.equals("U")) {
 			// i don't read a book
 		}
@@ -92,17 +89,11 @@ public class RoutingTable implements BaseLayer {
 			directTransferIp = dstIpAddr;
 		}
 
-		// 4.ARP check : byte[] srcIpAddr = null; // ** not complete **
-		directTransferMac = ((ARPLayer) RouterDlg.m_LayerMgr.getLayer("ARPLayer")).getDstMac(srcIpAddr, directTransferIp);
-
 		// 5.send
-		if (matchedRout.metric.equals("1")) {
-			return this.send(input, input.length, directTransferMac);
-		}
-		else if (matchedRout.metric.equals("2")) {
-			return ((IPLayer) this.getUpperLayer(1)).send(input, input.length, directTransferMac);
-		}
-		return false;
+		String[] temp = matchedRout.Interface.split("_");
+		int portNum = Integer.parseInt(temp[1]);
+		return ((IPLayer)this.getUnderLayer(portNum - 1)).send(input, input.length);
+		
 	}
 	
 	public _Routing_Structures getMatchedRout(byte[] dstIpAddr) {
