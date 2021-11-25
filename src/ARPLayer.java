@@ -15,7 +15,7 @@ public class ARPLayer implements BaseLayer {
 	private Logger logging;
 
 	// ----- ARPTable -----
-	private HashMap<String, String> ARPTable = new HashMap<>();
+	public HashMap<String, String> ARPTable = new HashMap<>();
 
 	// ----- ProxyARPTable -----
 	private HashMap<String, String> ProxyARPTable = new HashMap<>();
@@ -54,6 +54,10 @@ public class ARPLayer implements BaseLayer {
 			this.arp_ip_dstaddr = new byte[4];
 		}
 	}
+	
+	public HashMap<String, String> getARPTable(){
+		return ARPTable;
+	}
 
 	// Methods
 	private void setHeaderToEnetAndIP() {
@@ -88,13 +92,13 @@ public class ARPLayer implements BaseLayer {
 		if(AllORItem == 0) {
 			logging.log("Delete all ARP table elements requested");
 			ARPTable.clear();
-			((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable(ARPTable);
+			((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable();
 		}
 		else {
 			if(ARPTable.containsKey(ByteToString(deleteIP))) {
 				logging.log("Delete one ARP table element requested");
 				ARPTable.remove(ByteToString(deleteIP));
-				((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable(ARPTable);
+				((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable();
 			}
 		}
 	}
@@ -112,7 +116,7 @@ public class ARPLayer implements BaseLayer {
 				ARPTimeTable.remove(entry.getKey());
 			}
 		}
-		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable(ARPTable);
+		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable();
 	}
 	
 	// ----- searchARP -----
@@ -127,7 +131,7 @@ public class ARPLayer implements BaseLayer {
 		else {
 			ARPTable.put(dstIP_String, "??????");
 			ARPTimeTable.put(dstIP_String, System.currentTimeMillis());
-			((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable(ARPTable);
+			((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable();
 			
 			// ----- ARPRequest -----
 			this.setHeaderToEnetAndIP();
@@ -166,7 +170,7 @@ public class ARPLayer implements BaseLayer {
 		
 		// src ARP auto upload
 		ARPTable.put(ByteToString(srcIpAddr), macBtoS(srcMacAddr));
-		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable(ARPTable);
+		((RouterDlg) RouterDlg.m_LayerMgr.getLayer("GUI")).printARPTable();
 		
 		// isMine 
 		if (isMine(dstIpAddr)) {

@@ -50,6 +50,7 @@ public class RoutingTable implements BaseLayer {
 		byte[] directTransferIp = null;
 		// 2.matchedRout
 		_Routing_Structures matchedRout = getMatchedRout(dstIpAddr);
+		if (matchedRout == null) return false;
 		// 3.Flag
 		if(matchedRout.Flag.equals("U")){}
 		else if(matchedRout.Flag.equals("UG")) {
