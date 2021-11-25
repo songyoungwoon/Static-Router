@@ -28,7 +28,7 @@ public class NILayer implements BaseLayer {
         if(this.m_pAdapter == null) {
             logging.panic("No more available adapters", null);
         }
-        logging.log(this.m_pAdapter.getName() + " installed");
+        logging.log(this.toString() + " installed");
 
 		int snaplen = 64 * 1024; // Capture all packets, no trucation
 		int flags = Pcap.MODE_PROMISCUOUS; // capture all packets
@@ -39,7 +39,7 @@ public class NILayer implements BaseLayer {
 
 	public boolean send(byte[] input, int length) {
 		ByteBuffer buf = ByteBuffer.wrap(input);
-		logging.log("Send from " + this.m_pAdapter.getName());
+		logging.log("Send from " + this.toString());
 		if (m_AdapterObject.sendPacket(buf) != Pcap.OK) {
 			logging.error(m_AdapterObject.getErr());
 			return false;
@@ -51,7 +51,9 @@ public class NILayer implements BaseLayer {
 		Receive_Thread thread = new Receive_Thread(m_AdapterObject, this.getUpperLayer(0));
 		Thread obj = new Thread(thread);
 		obj.start();
-		logging.log("Receive thread(" + m_pAdapter.getName() + ") start");
+		logging.log("Receive thread(" + this.toString() + ") start");
+		System.out.println(1);
+	
         return true;
 	}
 	
@@ -107,6 +109,17 @@ public class NILayer implements BaseLayer {
 		pUULayer.setUnderLayer(this);
 
 	}
+	private String ByteToString(byte[] data) {
+		return String.format("%d.%d.%d.%d", (data[0] & 0xff), (data[1] & 0xff), (data[2] & 0xff), (data[3] & 0xff));
+	}
+
+	private String macBtoS(byte[] b) {
+		return String.format("%02X-%02X-%02X-%02X-%02X-%02X", b[0], b[1], b[2], b[3], b[4], b[5]);
+	}
+	
+	public String toString() {
+		return macBtoS(getAdapterMAC()) + '/' + ByteToString(getAdapterIP());
+	}
 }
 
 // ----- Thread class -----
@@ -125,7 +138,7 @@ class Receive_Thread implements Runnable {
 		while (true) {
 			PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>() {
 				public void nextPacket(PcapPacket packet, String user) {
-					System.out.println("[NI]: Receive");
+					System.out.println("[NI]: Receive and pass to " + UpperLayer.getLayerName());
 					data = packet.getByteArray(0, packet.size());
 					UpperLayer.receive(data);
 				}

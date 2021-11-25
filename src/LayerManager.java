@@ -49,8 +49,11 @@ public class LayerManager {
 	
 	public void connectLayers(String pcList){
 		makeList(pcList);
-		linkLayer(mp_sListHead); 
-	}
+		linkLayer(mp_sListHead);
+		mp_sListHead = null;
+		mp_sListTail = null;
+		m_nTop = -1;
+		}
 
 	private void makeList(String pcList){ 
 		StringTokenizer tokens = new StringTokenizer(pcList, " ");

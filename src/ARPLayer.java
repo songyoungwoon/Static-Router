@@ -66,7 +66,7 @@ public class ARPLayer implements BaseLayer {
 	// ----- getDstMac -----
 	public byte[] getDstMac(byte[] dstIP) {
 		deleteTimeOverARP();
-		logging.log("Get destination MAC addr requested");
+		logging.log("Get destination MAC addr requested " + ByteToString(dstIP));
 		String strDstIP = ByteToString(dstIP);
 		if(ARPTable.containsKey(strDstIP) && ARPTable.get(strDstIP) != "??????") {
 			return macStoB(ARPTable.get(strDstIP));
@@ -132,7 +132,8 @@ public class ARPLayer implements BaseLayer {
 			// ----- ARPRequest -----
 			this.setHeaderToEnetAndIP();
 			m_sHeader.arp_op = intToByte2(0x0001);
-			m_sHeader.arp_enet_srcaddr = ((EthernetLayer) getUnderLayer()).getEnetSrcAddress();
+			m_sHeader.arp_enet_srcaddr = ((NILayer)this.getUnderLayer().getUnderLayer()).getAdapterMAC();
+			System.out.println(macBtoS(m_sHeader.arp_enet_srcaddr));
 			m_sHeader.arp_ip_srcaddr = ((NILayer)this.getUnderLayer().getUnderLayer()).getAdapterIP();
 			m_sHeader.arp_enet_dstaddr = new byte[6];
 			m_sHeader.arp_ip_dstaddr = dstIP;
@@ -177,7 +178,7 @@ public class ARPLayer implements BaseLayer {
 					return true;
 				}
 				logging.log("Receive ARP Request");
-				dstMacAddr = ((EthernetLayer) getUnderLayer()).getEnetSrcAddress();
+				dstMacAddr = ((NILayer)this.getUnderLayer().getUnderLayer()).getAdapterMAC();
 				return sendReply(srcMacAddr, srcIpAddr, dstMacAddr, dstIpAddr);
 			}
 			// ARP reply
@@ -187,18 +188,20 @@ public class ARPLayer implements BaseLayer {
 			}
 		}
 		// not Mine 
-		else if (srcIpAddr != dstIpAddr) {
+		else  {
 			// proxy table check
 			String dstIP_String = ByteToString(dstIpAddr);
 			// exist proxy table
 			if (ProxyARPTable.containsKey(dstIP_String)) {
 				logging.log("Receive ARP for proxy host");
-				byte[] proxy_dstMacAddr = ((EthernetLayer) getUnderLayer()).getEnetSrcAddress();
+				byte[] proxy_dstMacAddr = ((NILayer)this.getUnderLayer().getUnderLayer()).getAdapterMAC();
 				sendReply(srcMacAddr, srcIpAddr, proxy_dstMacAddr, StringToByte(dstIP_String));
 				return true;
 			}
 			// none exist proxy table
 			else {
+				logging.log(ByteToString(srcIpAddr));
+				logging.log(dstIP_String);
 				logging.log("Receive ARP that is not mine");
 				return false;
 			}
@@ -208,7 +211,7 @@ public class ARPLayer implements BaseLayer {
 
 	
 	private boolean isMine(byte[] input) {
-		byte[] MyADDR = ((IPLayer) getUpperLayer(0)).getIPSrcAddress();
+		byte[] MyADDR = ((NILayer)this.getUnderLayer().getUnderLayer()).getAdapterIP();
 		for (int i = 0; i < 4; i++)
 			if (MyADDR[i] != input[i])
 				return false;
