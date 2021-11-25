@@ -45,48 +45,23 @@ public class RoutingTable implements BaseLayer {
     }
 
     public boolean rout(byte[] input) {
-    	/*
-		 input 패킷 뜯어서 목적지 ip 체크 -> ping packet 구조 알아야됨
-		 routing table 확인
-		  해당 network port, gateway ip 확인 ( 직접 연결 됐으면 ㄴ )
-		 ip에 해당하는 arp table 뒤적
-		 arp 없으면 arp request 후 reply 될 때까지 ㄱㄷ
-		 dst mac addr와 같이 send -> dst addr은 ether에서 header로 적을듯
-		 */
-
 		// 1.address
-		byte[] srcIpAddr = null; //empty for now
 		byte[] dstIpAddr = Arrays.copyOfRange(input, 16, 20);
 		byte[] directTransferIp = null;
-
-		// *.if dstIP_Addr is me, do nothing
-
 		// 2.matchedRout
 		_Routing_Structures matchedRout = getMatchedRout(dstIpAddr);
-		if (matchedRout == null) {
-			return false;
-		}
-
+		if (matchedRout == null) return false;
 		// 3.Flag
-		// portNum not determined
-		if(matchedRout.Flag.equals("U")) {
-			// i don't read a book
-		}
+		if(matchedRout.Flag.equals("U")){}
 		else if(matchedRout.Flag.equals("UG")) {
 			directTransferIp = StringToByte(matchedRout.Gateway);
 		}
 		else if(matchedRout.Flag.equals("UH")) {
 			directTransferIp = dstIpAddr;
 		}
-
-		// 5.send
+		// 4.send
 		String[] temp = matchedRout.Interface.split("_");
 		int portNum = Integer.parseInt(temp[1]);
-		int in = 0;
-		for(BaseLayer b: p_aUnderLayer) {
-			System.out.print(in++);
-			System.out.println(b);		
-		}
 		return ((IPLayer) this.getUnderLayer(portNum - 1)).send(input, input.length, directTransferIp);
 		
 	}
