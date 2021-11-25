@@ -187,7 +187,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		
 		for (String i : arp1.keySet()) {
 			String status = arp1.get(i) == "??????" ? "\tIncomplete" : "Complete";
-
 			if(i.length() < 13)
 				arpCacheArea.append(i + "\t\t" + arp1.get(i) + "\t" + status + "\n");
 			else
