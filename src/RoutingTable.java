@@ -56,13 +56,16 @@ public class RoutingTable implements BaseLayer {
 
 		// 1.address
 		byte[] srcIpAddr = null; //empty for now
-		byte[] dstIpAddr = Arrays.copyOfRange(input, 30, 34);
+		byte[] dstIpAddr = Arrays.copyOfRange(input, 16, 20);
 		byte[] directTransferIp = null;
 
 		// *.if dstIP_Addr is me, do nothing
 
 		// 2.matchedRout
 		_Routing_Structures matchedRout = getMatchedRout(dstIpAddr);
+		if (matchedRout == null) {
+			return false;
+		}
 
 		// 3.Flag
 		// portNum not determined
@@ -79,8 +82,12 @@ public class RoutingTable implements BaseLayer {
 		// 5.send
 		String[] temp = matchedRout.Interface.split("_");
 		int portNum = Integer.parseInt(temp[1]);
-		
-		return ((IPLayer)this.getUnderLayer(portNum - 1)).send(input, input.length, directTransferIp);
+		int in = 0;
+		for(BaseLayer b: p_aUnderLayer) {
+			System.out.print(in++);
+			System.out.println(b);		
+		}
+		return ((IPLayer) this.getUnderLayer(portNum - 1)).send(input, input.length, directTransferIp);
 		
 	}
 	
@@ -142,7 +149,7 @@ public class RoutingTable implements BaseLayer {
 	public BaseLayer getUnderLayer(int nindex) {
 		if (nindex < 0 || nindex > nUnderLayerCount || nUnderLayerCount < 0)
 			return null;
-		return p_aUpperLayer.get(nindex);
+		return p_aUnderLayer.get(nindex);
 	}
 
 	@Override

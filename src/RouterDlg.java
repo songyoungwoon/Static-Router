@@ -43,6 +43,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 	private JTextField routerTableWrite;
 	private JTextField arpCacheWrite;
+	
 
 	Container contentPane;
 	
@@ -81,8 +82,71 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	int adapterNumber = 0;
 
 	String Text;
+	
+	private static byte[] macStoBB(String strMacAddr) {
+		String[] strArr = strMacAddr.split("-");
+		if(strArr.length != 6) { return null; }
+		byte[] byteMacAddr = new byte[6];
+		for(int i = 0; i < 6; i++) {
+			byteMacAddr[i] = (byte)Integer.parseInt(strArr[i], 16);
+		}
+		return byteMacAddr;
+	}
 
+	private static byte[] StringToBytee(String data) {
+		String[] strArr = data.split("[.]");
+		if(strArr.length != 4) { return null; }
+		byte[] byteIpAddr = new byte[4];
+		for(int i = 0; i < 4; i++) {
+			byteIpAddr[i] = (byte)Integer.parseInt(strArr[i]);
+		}
+		return byteIpAddr;
+	}
+	
 	public static void main(String[] args) {
+		/*
+		// Get all adapters
+				jnet = new JNetManager();
+				// Adding layers
+				NILayer ni1 = new NILayer("NI");
+				m_LayerMgr.addLayer(ni1);
+				EthernetLayer eth1 = new EthernetLayer("Ethernet");
+				m_LayerMgr.addLayer(eth1);
+				m_LayerMgr.addLayer(new ARPLayer("ARP"));
+				
+				IPLayer ip1 = new IPLayer("IP");
+				m_LayerMgr.addLayer(ip1);
+
+				NILayer ni2 = new NILayer("NI2");
+				m_LayerMgr.addLayer(ni2);
+				EthernetLayer eth2 = new EthernetLayer("Ethernet2");
+				m_LayerMgr.addLayer(eth2);
+				m_LayerMgr.addLayer(new ARPLayer("ARP2"));
+				IPLayer ip2 = new IPLayer("IP2");
+				m_LayerMgr.addLayer(ip2);
+				
+				RoutingTable rt = new RoutingTable("RT");
+				m_LayerMgr.addLayer(rt);
+				
+				RouterDlg dlg = new RouterDlg("GUI");
+				m_LayerMgr.addLayer(dlg);
+
+
+				// Connecting Layers
+//				m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *RT ( *GUI )");
+//				m_LayerMgr.connectLayers("Ethernet ( *ARP ( +IP )");
+		//
+//				m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *IP2 ( *RT ( *GUI )");
+//				m_LayerMgr.connectLayers("Ethernet2 ( *ARP2 ( +IP2 )");
+				
+				m_LayerMgr.connectLayers("NI ( *Ethernet ( *ARP ( +IP ) *IP ) ) ");
+				m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *ARP2 ( +IP2 ) *IP2 ) ) ");
+				
+				rt.setUnderLayer(ip1);
+				rt.setUnderLayer(ip2);
+				dlg.setUnderLayer(rt);
+		
+		*/
 		// Get all adapters
 		jnet = new JNetManager();
 		// Adding layers	
@@ -101,27 +165,35 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 
 		// Connecting Layers
-		m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *RT ( *GUI )");
-		m_LayerMgr.connectLayers("Ethernet ( *ARP ( +IP )");
+		m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *RT ( *GUI ) ) ) )");
+		m_LayerMgr.connectLayers("Ethernet ( *ARP ( +IP ) )");
 
-		m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *IP2 ( *RT ( *GUI )");
-		m_LayerMgr.connectLayers("Ethernet2 ( *ARP2 ( +IP2 )");
-
-		//m_LayerMgr.connectLayers("NI ( *Ethernet ( *ARP ( +IP ) ( *IP ( *RT (+ IP2 ) ( *GUI ) ) ) ) ) ");
-		//m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *ARP2 ( +IP2 ) ( *IP2 ( *RT ( + IP ) ( *GUI ) ) ) ) )");
+		m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *IP2 ( *RT ( *GUI ) ) ) )");
+		m_LayerMgr.connectLayers("Ethernet2 ( *ARP2 ( +IP2 ) )");
+		
+		byte[] mac1 = ((NILayer)m_LayerMgr.getLayer("NI")).getAdapterMAC();
+		((EthernetLayer)m_LayerMgr.getLayer("Ethernet")).setEnetSrcAddress(mac1);
+		byte[] mac2 = ((NILayer)m_LayerMgr.getLayer("NI2")).getAdapterMAC();
+		((EthernetLayer)m_LayerMgr.getLayer("Ethernet2")).setEnetSrcAddress(mac2);
+				
+		m_LayerMgr.getLayer("NI").receive();
+		m_LayerMgr.getLayer("NI2").receive();
 	}
 
 	// print ARP Table arp cache area
-	public void printARPTable(HashMap<String, String> ARPTable) {
+	public void printARPTable() {
+		HashMap<String, String> arp1 = ((ARPLayer) m_LayerMgr.getLayer("ARP")).getARPTable();
 		arpCacheArea.setText("IP\t\tMAC\t\tStatus\n");
-		for (String i : ARPTable.keySet()) {
-			String status = ARPTable.get(i) == "??????" ? "\tIncomplete" : "Complete";
+		
+		for (String i : arp1.keySet()) {
+			String status = arp1.get(i) == "??????" ? "\tIncomplete" : "Complete";
 
 			if(i.length() < 13)
-				arpCacheArea.append(i + "\t\t" + ARPTable.get(i) + "\t" + status + "\n");
+				arpCacheArea.append(i + "\t\t" + arp1.get(i) + "\t" + status + "\n");
 			else
-				arpCacheArea.append(i + "\t" + ARPTable.get(i) + "\t" + status + "\n");
+				arpCacheArea.append(i + "\t" + arp1.get(i) + "\t" + status + "\n");
 		}
+
 	}
 	
 	// print routing table area
@@ -183,7 +255,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				netmaskArea.setText("");
 				gatewayArea.setText("");
 				routerInterfaceComboBox.setSelectedIndex(0);
-
+				
 			}
 			
 			
