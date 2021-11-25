@@ -32,7 +32,7 @@ public class JNetManager {
 			System.exit(0);
         }
 
-        // Filter IPv4 adaters from all adapters
+        // Filter IPv4 adapters from all adapters
 		this.m_pAdapterList = new ArrayList<PcapIf>();
         for(int i = 0; i < allDevs.size(); i++) {
             if(allDevs.get(i).getAddresses().get(0).getAddr().getFamily() == 2) {

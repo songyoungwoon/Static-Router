@@ -24,7 +24,7 @@ public class NILayer implements BaseLayer {
 		this.pLayerName = pName;
 		this.logging = new Logger(this);
 
-        this.m_pAdapter = RouterDlg.jnet.getPcapIf(); // TODO: need public JNetManager obj
+        this.m_pAdapter = RouterDlg.jnet.getPcapIf();
         if(this.m_pAdapter == null) {
             logging.panic("No more available adapters", null);
         }

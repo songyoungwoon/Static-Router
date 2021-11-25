@@ -53,9 +53,6 @@ public class EthernetLayer implements BaseLayer {
 	}
 
 	// ----- Methods -----
-	
-	// ----- RouterSend -----
-	// ----- TODO : send Routing data -----
 	// check portNum, attach header (DST, SRC MacAddr)
 	public boolean send(byte[] input, int length, byte[] dstIP) {
 		setEnetSrcAddress(((NILayer)this.getUnderLayer()).getAdapterMAC());
@@ -89,13 +86,11 @@ public class EthernetLayer implements BaseLayer {
 	private String macBtoS(byte[] b) {
 		return String.format("%02X-%02X-%02X-%02X-%02X-%02X", b[0], b[1], b[2], b[3], b[4], b[5]);
 	}
-	
-	// ----- TODO : check ARP OR ROUT -----
+
 	// check ethernet type in ethernet header
 	// 0x0800 : rout, 0x0806 : arp
 	public synchronized boolean receive(byte[] input) {
 		_ETHERNET_Frame received = this.byteToObj(input, input.length);
-		logging.log("received from " + macBtoS(received.enet_srcaddr.addr) + " to " + macBtoS(received.enet_dstaddr.addr));
 		int frameType = byte2ToInt(received.enet_type[0], received.enet_type[1]);
 		
 		if(frameType == ARP_TYPE) {
@@ -109,15 +104,11 @@ public class EthernetLayer implements BaseLayer {
 		}
 		
 		if(isBroadcast(received.enet_dstaddr)) {
-
-			
 			logging.log("Frame rejected: Unknown broadcast");
 			return false;
 		}
 
 		if(!dstIsMe(received.enet_dstaddr)) {
-			System.out.println(macBtoS(m_sHeader.enet_srcaddr.addr));
-			System.out.println(macBtoS(received.enet_dstaddr.addr));
 			logging.log("Frame rejected: Not sent to this host");
 			return false;
 		}
