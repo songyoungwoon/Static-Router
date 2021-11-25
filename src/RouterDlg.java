@@ -44,6 +44,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	private JTextField routerTableWrite;
 	private JTextField arpCacheWrite;
 	
+	private HashMap<String, String> TotalARPTable = new HashMap<>();
 
 	Container contentPane;
 	
@@ -140,15 +141,24 @@ public class RouterDlg extends JFrame implements BaseLayer {
 
 	// print ARP Table arp cache area
 	public void printARPTable() {
+		TotalARPTable.clear();
+		
 		HashMap<String, String> arp1 = ((ARPLayer) m_LayerMgr.getLayer("ARP")).getARPTable();
-		arpCacheArea.setText("IP\t\tMAC\t\tStatus\n");
+		HashMap<String, String> arp2 = ((ARPLayer) m_LayerMgr.getLayer("ARP2")).getARPTable();
 		
 		for (String i : arp1.keySet()) {
-			String status = arp1.get(i) == "??????" ? "\tIncomplete" : "Complete";
+			TotalARPTable.put(i, arp1.get(i));
+		}
+		for (String i : arp2.keySet()) {
+			TotalARPTable.put(i, arp2.get(i));			
+		}
+		arpCacheArea.setText("IP\t\tMAC\t\tStatus\n");
+		for (String i : TotalARPTable.keySet()) {
+			String status = TotalARPTable.get(i) == "??????" ? "\tIncomplete" : "Complete";
 			if(i.length() < 13)
-				arpCacheArea.append(i + "\t\t" + arp1.get(i) + "\t" + status + "\n");
+				arpCacheArea.append(i + "\t\t" + TotalARPTable.get(i) + "\t" + status + "\n");
 			else
-				arpCacheArea.append(i + "\t" + arp1.get(i) + "\t" + status + "\n");
+				arpCacheArea.append(i + "\t" + TotalARPTable.get(i) + "\t" + status + "\n");
 		}
 	}
 	
