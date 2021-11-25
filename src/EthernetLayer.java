@@ -59,7 +59,9 @@ public class EthernetLayer implements BaseLayer {
 	// check portNum, attach header (DST, SRC MacAddr)
 	public boolean send(byte[] input, int length, byte[] dstIP) {
 		setEnetSrcAddress(((NILayer)this.getUnderLayer()).getAdapterMAC());
-		setEnetDstAddress(((ARPLayer) this.getUpperLayer(0)).getDstMac(dstIP));
+		byte[] dstMac = ((ARPLayer) this.getUpperLayer(1)).getDstMac(dstIP);
+		if(dstMac == null) { return false; }
+		setEnetDstAddress(dstMac);
 		setEnetType(DATA_TYPE);
 		logging.log("Send data");
 		byte[] bytes = objToByte(m_sHeader, input, length, false);
@@ -83,13 +85,23 @@ public class EthernetLayer implements BaseLayer {
 		input = cpyInput;
 		return input;
 	}
+
+	private String macBtoS(byte[] b) {
+		return String.format("%02X-%02X-%02X-%02X-%02X-%02X", b[0], b[1], b[2], b[3], b[4], b[5]);
+	}
 	
 	// ----- TODO : check ARP OR ROUT -----
 	// check ethernet type in ethernet header
 	// 0x0800 : rout, 0x0806 : arp
 	public synchronized boolean receive(byte[] input) {
 		_ETHERNET_Frame received = this.byteToObj(input, input.length);
+		logging.log("received from " + macBtoS(received.enet_srcaddr.addr) + " to " + macBtoS(received.enet_dstaddr.addr));
 		int frameType = byte2ToInt(received.enet_type[0], received.enet_type[1]);
+		
+		if(frameType == ARP_TYPE) {
+			logging.log("Receive ARP frame");
+			return ((ARPLayer) this.getUpperLayer(1)).receive(received.enet_data);
+		}
 
 		if(srcIsMe(received.enet_srcaddr)) {
 			logging.log("Frame rejected: Sent by this host");
@@ -97,22 +109,22 @@ public class EthernetLayer implements BaseLayer {
 		}
 		
 		if(isBroadcast(received.enet_dstaddr)) {
-			if(frameType == ARP_TYPE) {
-				logging.log("Receive ARP frame");
-				return ((ARPLayer) this.getUpperLayer(0)).receive(received.enet_data);
-			}
+
+			
 			logging.log("Frame rejected: Unknown broadcast");
 			return false;
 		}
 
 		if(!dstIsMe(received.enet_dstaddr)) {
+			System.out.println(macBtoS(m_sHeader.enet_srcaddr.addr));
+			System.out.println(macBtoS(received.enet_dstaddr.addr));
 			logging.log("Frame rejected: Not sent to this host");
 			return false;
 		}
 	
 		if (frameType == DATA_TYPE) {
 			logging.log("Receive data frame");
-			return ((IPLayer) this.getUpperLayer(1)).receive(received.enet_data);
+			return ((IPLayer) this.getUpperLayer(0)).receive(received.enet_data);
 		}
 		return false;		
 	}
