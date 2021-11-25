@@ -104,49 +104,7 @@ public class RouterDlg extends JFrame implements BaseLayer {
 	}
 	
 	public static void main(String[] args) {
-		/*
-		// Get all adapters
-				jnet = new JNetManager();
-				// Adding layers
-				NILayer ni1 = new NILayer("NI");
-				m_LayerMgr.addLayer(ni1);
-				EthernetLayer eth1 = new EthernetLayer("Ethernet");
-				m_LayerMgr.addLayer(eth1);
-				m_LayerMgr.addLayer(new ARPLayer("ARP"));
-				
-				IPLayer ip1 = new IPLayer("IP");
-				m_LayerMgr.addLayer(ip1);
-
-				NILayer ni2 = new NILayer("NI2");
-				m_LayerMgr.addLayer(ni2);
-				EthernetLayer eth2 = new EthernetLayer("Ethernet2");
-				m_LayerMgr.addLayer(eth2);
-				m_LayerMgr.addLayer(new ARPLayer("ARP2"));
-				IPLayer ip2 = new IPLayer("IP2");
-				m_LayerMgr.addLayer(ip2);
-				
-				RoutingTable rt = new RoutingTable("RT");
-				m_LayerMgr.addLayer(rt);
-				
-				RouterDlg dlg = new RouterDlg("GUI");
-				m_LayerMgr.addLayer(dlg);
-
-
-				// Connecting Layers
-//				m_LayerMgr.connectLayers("NI ( *Ethernet ( *IP ( *RT ( *GUI )");
-//				m_LayerMgr.connectLayers("Ethernet ( *ARP ( +IP )");
-		//
-//				m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *IP2 ( *RT ( *GUI )");
-//				m_LayerMgr.connectLayers("Ethernet2 ( *ARP2 ( +IP2 )");
-				
-				m_LayerMgr.connectLayers("NI ( *Ethernet ( *ARP ( +IP ) *IP ) ) ");
-				m_LayerMgr.connectLayers("NI2 ( *Ethernet2 ( *ARP2 ( +IP2 ) *IP2 ) ) ");
-				
-				rt.setUnderLayer(ip1);
-				rt.setUnderLayer(ip2);
-				dlg.setUnderLayer(rt);
 		
-		*/
 		// Get all adapters
 		jnet = new JNetManager();
 		// Adding layers	
@@ -192,7 +150,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 			else
 				arpCacheArea.append(i + "\t" + arp1.get(i) + "\t" + status + "\n");
 		}
-
 	}
 	
 	// print routing table area
@@ -246,8 +203,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				
 				String interface_ = routerInterfaceComboBox.getSelectedItem().toString();
 				
-//				String metrics = routerMetricsComboBox.getSelectedItem().toString();
-				
 				((RoutingTable) m_LayerMgr.getLayer("RT")).addRoutingTableEntry(destination, netmask, gateway, flag, interface_);
 				
 				destinationArea.setText("");
@@ -256,27 +211,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 				routerInterfaceComboBox.setSelectedIndex(0);
 				
 			}
-			
-			
-			
-			// -----setting------------------------------------------------------------------------------------
-			// setting button
-//			if (e.getSource() == Setting_Button) {
-//				byte[] srcIp = ipStoB();
-//				byte[] srcMac = macStoB();
-//				byte[] dstIp = ipStoB();
-//				
-//				if(srcIp != null && srcMac != null && dstIp != null) {
-//					((IPLayer) m_LayerMgr.getLayer("IP")).setIPSrcAddress(srcIp);
-//					((IPLayer) m_LayerMgr.getLayer("IP")).setIPDstAddress(dstIp);
-//					((EthernetLayer) m_LayerMgr.getLayer("Ethernet")).setEnetSrcAddress(srcMac);
-//
-//					((NILayer) m_LayerMgr.getLayer("NI")).setAdapterNumber(adapterNumber);
-//
-//				} else {
-//					JOptionPane.showMessageDialog(null, "Wrong Address Format");
-//				}
-//			}
 		}
 	}
 
@@ -312,13 +246,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		routerTableArea.setEditable(false);
 		routerTableArea.setBounds(0, 0, 680, 210);
 		routerEditorPanel.add(routerTableArea);// router table edit
-		
-		
-//		// router table add button
-//		Router_Add_Button = new JButton("Add");
-//		Router_Add_Button.setBounds(100, 340, 210, 45);
-//		Router_Add_Button.addActionListener(new SetAddressListener());
-//		routerPanel.add(Router_Add_Button);// router Delete button
 		
 		// router table delete button
 		Router_Delete_Button = new JButton("Delete");
@@ -433,23 +360,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		flagHost.setBounds(140, 0, 60, 20);
 		flagPanel.add(flagHost);
 		
-//		// metrics
-//		labelInterface = new JLabel("Metrics");
-//		labelInterface.setBounds(50, 250, 90, 20);
-//		routerEntryPanel.add(labelInterface);
-//		
-//		JPanel metricsPanel = new JPanel();
-//		metricsPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-//		metricsPanel.setBounds(140, 250, 200, 20);
-//		routerEntryPanel.add(metricsPanel);
-//		metricsPanel.setLayout(null);
-//		
-//		String[] port_num = {"1", "2"};
-//		routerMetricsComboBox = new JComboBox(port_num);
-//		routerMetricsComboBox.setBounds(0, 0, 200, 20);
-//		metricsPanel.add(routerMetricsComboBox);
-		
-		
 		// interface
 		labelInterface = new JLabel("Interface");
 		labelInterface.setBounds(50, 250, 90, 20);
@@ -471,65 +381,6 @@ public class RouterDlg extends JFrame implements BaseLayer {
 		Router_Table_Entry_Add_Button.setBounds(100, 520, 200, 45);
 		Router_Table_Entry_Add_Button.addActionListener(new SetAddressListener());
 		routerEntryPanel.add(Router_Table_Entry_Add_Button);
-		
-		
-		// -----setting---------------------------------------------------------------------------------
-//		// setting address panel
-//		JPanel settingPanel = new JPanel();
-//		settingPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "setting",
-//				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-//		settingPanel.setBounds(720, 620, 600, 200);
-//		contentPane.add(settingPanel);
-//		settingPanel.setLayout(null);
-//
-//		JLabel NICLabel = new JLabel("NIC List :");
-//		NICLabel.setBounds(20, 30, 170, 20);
-//		settingPanel.add(NICLabel);
-//
-//		NICComboBox_1 = new JComboBox();
-//		NICComboBox_1.setBounds(20, 70, 360, 20);
-//		settingPanel.add(NICComboBox_1);
-//
-//		NILayer tempNiLayer = (NILayer) m_LayerMgr.getLayer("NI");
-//
-//		for (int i = 0; i < tempNiLayer.getAdapterList().size(); i++) {
-//			// NICComboBox.addItem(((NILayer)
-//			// m_LayerMgr.getLayer("NI")).getAdapterObject(i).getDescription());
-//			PcapIf pcapIf = tempNiLayer.getAdapterObject(i); //
-//			NICComboBox_1.addItem(pcapIf.getName());
-//		}
-//
-//		NICComboBox_1.addActionListener(new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				// adapterNumber = NICComboBox.getSelectedIndex();
-//				JComboBox jcombo = (JComboBox) e.getSource();
-//				adapterNumber = jcombo.getSelectedIndex();
-//				try {
-//					srcMacAddress.setText("");
-//					String macAddr = macBtoS(((NILayer) m_LayerMgr.getLayer("NI")).getAdapterObject(adapterNumber).getHardwareAddress());
-//					logging.log("Adapter selected: " + adapterNumber + ", Present MAC Addr: " + macAddr);
-//					srcMacAddress.append(macAddr);
-//
-//				} catch (IOException e1) {
-//					e1.printStackTrace();
-//				}
-//			}
-//		});
-//
-//		try {
-//			srcMacAddress.append(macBtoS(
-//					((NILayer) m_LayerMgr.getLayer("NI")).getAdapterObject(adapterNumber).getHardwareAddress()));
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
-//		;
-//
-//		Setting_Button = new JButton("Setting");// setting
-//		Setting_Button.setBounds(100, 140, 200, 45);
-//		Setting_Button.addActionListener(new SetAddressListener());
-//		settingPanel.add(Setting_Button);
 		
 		setVisible(true);
 
