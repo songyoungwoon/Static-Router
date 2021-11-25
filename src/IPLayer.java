@@ -73,8 +73,8 @@ public class IPLayer implements BaseLayer {
 	}
 	
 	// ----- send -----
-	public boolean send(byte[] input, int length, byte[] directTransferMac) {
-		((EthernetLayer)this.getUnderLayer()).send(input, input.length, directTransferMac);
+	public boolean send(byte[] input, int length, byte[] directTransferIp) {
+		((EthernetLayer)this.getUnderLayer()).send(input, input.length, directTransferIp);
 		return true;
 	}
 	
